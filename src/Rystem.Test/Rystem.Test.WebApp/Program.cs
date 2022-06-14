@@ -1,13 +1,12 @@
 using Rystem.Test.WebApp;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddServiceLocator();
 builder.Services.AddScoped<RandomService>();
-builder.Services.AddBuildCallback(serviceLocator =>
+builder.Services.AddWarmUp(serviceLocator =>
 {
     return Task.FromResult(0);
 });
-builder.Services.AddBuildCallback(serviceLocator =>
+builder.Services.AddWarmUp(serviceLocator =>
 {
     var service = serviceLocator.GetService<RandomService>();
     return Task.FromResult(0);
@@ -16,7 +15,7 @@ builder.Services.AddBuildCallback(serviceLocator =>
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
-await app.RunCallbacksAfterBuild();
+await app.WarmUp();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

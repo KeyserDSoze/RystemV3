@@ -2,7 +2,7 @@
 
 namespace Rystem
 {
-    public class ServiceLocator
+    internal static class ServiceProviderUtility
     {
         static internal Func<IServiceProvider, Task>? AfterBuildEvent;
         static internal async Task AfterBuildAsync(IServiceProvider providers)
@@ -12,6 +12,7 @@ namespace Rystem
             if (AfterBuildEvent != null)
                 tasks.Add(AfterBuildEvent.Invoke(scope.ServiceProvider));
             await Task.WhenAll(tasks);
+            await scope.DisposeAsync();
         }
     }
 }

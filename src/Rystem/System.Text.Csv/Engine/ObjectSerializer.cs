@@ -28,9 +28,12 @@ namespace System.Text.Csv
             }
         }
 
-        public string Serialize(Type type, object value, int deep = int.MaxValue)
-            => string.Join((char)deep,
-                type.FetchProperties(Ignore)
-                    .Select(x => Serializer.Instance.Serialize(x.PropertyType, x.GetValue(value)!, deep - 1)));
+        public string Serialize(Type type, object value, int deep, StringBuilder? header)
+        {
+            header?.Append($"{(char)deep}{type.Name}");
+            return string.Join((char)deep,
+                           type.FetchProperties(Ignore)
+                               .Select(x => Serializer.Instance.Serialize(x.PropertyType, x.GetValue(value)!, deep - 1, header)));
+        }
     }
 }

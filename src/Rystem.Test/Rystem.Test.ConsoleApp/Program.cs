@@ -40,10 +40,10 @@ users.Add(user);
 users.Add(user);
 users.Add(user);
 users.Add(user);
-var x = users.ToCsv();
+var x = users.ToCsv(true);
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-var t = x.FromCsv<List<User>>();
+var t = x.FromCsv<List<User>>(true);
 #pragma warning restore IDE0079 // Remove unnecessary suppression
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning restore IDE0059 // Unnecessary assignment of a value

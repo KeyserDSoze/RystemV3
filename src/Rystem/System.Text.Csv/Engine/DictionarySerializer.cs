@@ -30,10 +30,11 @@ namespace System.Text.Csv
             return dictionary;
         }
 
-        public string Serialize(Type type, object value, int deep = int.MaxValue)
+        public string Serialize(Type type, object value, int deep, StringBuilder? header)
         {
+            header?.Append($"{(char)deep}{type.Name}");
             return string.Join((char)deep, Read()
-                .Select(x => $"{Serializer.Instance.Serialize(x.Key.GetType(), x.Key, deep - 2)}{(char)(deep - 1)}{Serializer.Instance.Serialize(x.Value.GetType(), x.Value, deep - 2)}"));
+                .Select(x => $"{Serializer.Instance.Serialize(x.Key.GetType(), x.Key, deep - 2, header)}{(char)(deep - 1)}{Serializer.Instance.Serialize(x.Value.GetType(), x.Value, deep - 2, header)}"));
 
             IEnumerable<(object Key, object Value)> Read()
             {

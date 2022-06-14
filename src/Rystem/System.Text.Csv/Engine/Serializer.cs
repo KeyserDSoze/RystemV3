@@ -15,10 +15,10 @@
         };
         public ICsvInterpreter? GetRightService(Type type)
            => _interpreters.OrderByDescending(x => x.Priority).FirstOrDefault(x => x.IsValid(type));
-        public dynamic Deserialize(Type type, string value, int deep = int.MaxValue)
+        public dynamic Deserialize(Type type, string value, int deep )
             => GetRightService(type)?.Deserialize(type, value, deep) ?? null!;
-        public string Serialize(Type type, object value, int deep = int.MaxValue)
-            => GetRightService(type)?.Serialize(type, value, deep) ?? null!;
+        public string Serialize(Type type, object value, int deep, StringBuilder? header)
+            => GetRightService(type)?.Serialize(type, value, deep, header) ?? null!;
         public bool IsValid(Type type) => true;
     }
 }

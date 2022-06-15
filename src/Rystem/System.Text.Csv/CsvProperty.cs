@@ -1,10 +1,10 @@
 ﻿namespace System.Text.Csv
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public sealed class CsvProperty : Attribute
+    public sealed class CsvPropertyAttribute : Attribute
     {
-        public string Name { get; }
-        public CsvProperty(string name)
-            => this.Name = name;
+        public int Column { get; }
+        public CsvPropertyAttribute(int column)
+            => Column = column;
     }
 }

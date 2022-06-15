@@ -7,6 +7,19 @@ namespace System.Text.Csv
         public int Priority => 0;
         private static readonly Type Ignore = typeof(CsvIgnore);
         public bool IsValid(Type type) => !type.IsInterface && !type.IsAbstract;
+        private static readonly Dictionary<string, PropertyInfo[]> Properties = new();
+        private static readonly object Semaphore = new();
+        private static readonly Type CsvProperty = typeof(CsvPropertyAttribute);
+        private static PropertyInfo[] GetOrderedProperties(Type type)
+        {
+            if (!Properties.ContainsKey(type.FullName!))
+                lock (Semaphore)
+                    if (!Properties.ContainsKey(type.FullName!))
+                        Properties.Add(type.FullName!, type.FetchProperties(Ignore)
+                            .OrderBy(x => (x.GetCustomAttribute(CsvProperty) as CsvPropertyAttribute)?.Column ?? int.MaxValue)
+                            .ToArray());
+            return Properties[type.FullName!];
+        }
         public dynamic Deserialize(Type type, string value, int deep = int.MaxValue)
         {
             var constructor = type.FecthConstructors()
@@ -18,7 +31,7 @@ namespace System.Text.Csv
             {
                 var instance = Activator.CreateInstance(type, constructor.GetParameters().Select(x => x.DefaultValue!).ToArray())!;
                 var enumerator = value.Split((char)deep).GetEnumerator();
-                foreach (var property in type.FetchProperties())
+                foreach (var property in GetOrderedProperties(type))
                 {
                     enumerator.MoveNext();
                     if (property.SetMethod != null)
@@ -27,13 +40,9 @@ namespace System.Text.Csv
                 return instance;
             }
         }
-
-        public string Serialize(Type type, object value, int deep, StringBuilder? header)
-        {
-            header?.Append($"{(char)deep}{type.Name}");
-            return string.Join((char)deep,
-                           type.FetchProperties(Ignore)
-                               .Select(x => Serializer.Instance.Serialize(x.PropertyType, x.GetValue(value)!, deep - 1, header)));
-        }
+        public string Serialize(Type type, object value, int deep)
+            => string.Join((char)deep,
+                GetOrderedProperties(type)
+                    .Select(x => Serializer.Instance.Serialize(x.PropertyType, x.GetValue(value)!, deep - 1)));
     }
 }

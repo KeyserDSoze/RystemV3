@@ -2,10 +2,12 @@
 
 namespace Rystem
 {
-    internal static class ServiceProviderUtility
+    internal class ServiceProviderUtility
     {
-        static internal Func<IServiceProvider, Task>? AfterBuildEvent;
-        static internal async Task AfterBuildAsync(IServiceProvider providers)
+        public static ServiceProviderUtility Instance { get; set;} = new();
+        private ServiceProviderUtility() { }
+        public Func<IServiceProvider, Task>? AfterBuildEvent { get; set; }
+        public async Task AfterBuildAsync(IServiceProvider providers)
         {
             var scope = providers.CreateAsyncScope();
             List<Task> tasks = new();

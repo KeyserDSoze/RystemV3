@@ -16,7 +16,15 @@ namespace System.Text.Csv
                 || type == typeof(TimeSpan?) || type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?) || type.IsEnum;
         public dynamic Deserialize(Type type, string value, int deep = int.MaxValue)
         {
-            
+            if (type == typeof(string))
+                return value;
+
+            if (string.IsNullOrWhiteSpace(value))
+                if (type.IsValueType)
+                    return Activator.CreateInstance(type)!;
+                else
+                    return null!;
+
             if (!type.IsEnum)
             {
                 return (!string.IsNullOrWhiteSpace(value) ?
@@ -30,10 +38,7 @@ namespace System.Text.Csv
                 return Enum.Parse(type, value);
         }
 
-        public string Serialize(Type type, object value, int deep, StringBuilder? header)
-        {
-            header?.Append($"{(char)deep}{type.Name}");
-            return value?.ToString() ?? string.Empty;
-        }
+        public string Serialize(Type type, object value, int deep)
+            => value?.ToString() ?? string.Empty;
     }
 }

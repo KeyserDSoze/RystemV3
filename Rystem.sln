@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem", "src\Rystem\Rystem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Test.ConsoleApp", "src\Rystem.Test\Rystem.Test.ConsoleApp\Rystem.Test.ConsoleApp.csproj", "{91EC3697-72E2-4293-B92B-ECEF94B50615}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Concurrency", "src\Rystem.Concurrency\Rystem.Concurrency.csproj", "{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

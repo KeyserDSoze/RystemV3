@@ -15,11 +15,10 @@ namespace System.Text.Csv
                 (array as dynamic)![i] = Serializer.Instance.Deserialize(currentType!, list[i], deep - 1);
             return array!;
         }
-        public string Serialize(Type type, object value, int deep, StringBuilder? header)
+        public string Serialize(Type type, object value, int deep)
         {
-            header?.Append($"{(char)deep}{type.Name}");
             return string.Join((char)deep, Read()
-                .Select(x => Serializer.Instance.Serialize(x.GetType(), x, deep - 1, header)));
+                .Select(x => Serializer.Instance.Serialize(x.GetType(), x, deep - 1)));
 
             IEnumerable<object> Read()
             {

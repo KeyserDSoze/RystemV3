@@ -4,6 +4,7 @@ using Rystem.Test.ConsoleApp;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text.Csv;
+using System.Timers;
 
 Console.WriteLine("Hello, World!");
 
@@ -74,13 +75,18 @@ users.Add(user);
 users.Add(user);
 users.Add(user);
 var x = users.ToCsv('&');
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
+
 var t = x.FromCsv<List<User>>('&');
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
-#pragma warning disable CS0219 // Variable is assigned but its value is never used
-string apollo = "";
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-#pragma warning restore CS0219 // Variable is assigned but its value is never used
+Console.WriteLine(t.Count);
+
+var something = new Something();
+something.Run(new()
+{
+    Cron = "* */1 * * *",
+    RunImmediately = true,
+    Key = nameof(Something)
+});
+while (true)
+{
+    await Task.Delay(10_000);
+}

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace System.Threading
+﻿namespace System.Timers
 {
     public interface IBackgroundJob
     {

@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Rystem.Concurrency
+﻿namespace System.Threading.Concurrent
 {
-    internal sealed class LockExecutor
+    public interface ILock
     {
-        private DateTime LastExecutionPlusExpirationTime;
-        internal bool IsExpired => DateTime.UtcNow > LastExecutionPlusExpirationTime;
-        private readonly MemoryImplementation Memory = new();
-        private readonly string Key;
-        public LockExecutor(string key)
-            => Key = key;
-        public async Task<LockResponse> ExecuteAsync(Func<Task> action, IDistributedImplementation implementation)
+        Task<LockResponse> ExecuteAsync(Func<Task> action, string? key = null);
+    }
+    public sealed class LockExecutor : ILock
+    {
+        private DateTime _lastExecutionPlusExpirationTime;
+        internal bool IsExpired => DateTime.UtcNow > _lastExecutionPlusExpirationTime;
+        private readonly ILockable _lockable;
+        public LockExecutor(ILockable lockable)
         {
-            implementation ??= Memory;
+            _lockable = lockable;
+        }
+
+        public async Task<LockResponse> ExecuteAsync(Func<Task> action, string? key = null)
+        {
+            key = key ?? string.Empty;
             DateTime start = DateTime.UtcNow;
-            LastExecutionPlusExpirationTime = start.AddDays(1);
+            _lastExecutionPlusExpirationTime = start.AddDays(1);
             while (true)
             {
-                if (await implementation.AcquireAsync(Key).NoContext())
+                if (await _lockable.AcquireAsync(key).NoContext())
                     break;
                 await Task.Delay(2).NoContext();
             }
-            Exception exception = default;
+            Exception exception = default!;
             try
             {
                 await action.Invoke().NoContext();
@@ -32,8 +34,8 @@ namespace Rystem.Concurrency
             {
                 exception = ex;
             }
-            await implementation.ReleaseAsync(Key).NoContext();
-            return new LockResponse(DateTime.UtcNow.Subtract(start), exception != default ? new List<Exception>() { exception } : null);
+            await _lockable.ReleaseAsync(key).NoContext();
+            return new LockResponse(DateTime.UtcNow.Subtract(start), exception != null ? new List<Exception>() { exception } : new());
         }
     }
 }

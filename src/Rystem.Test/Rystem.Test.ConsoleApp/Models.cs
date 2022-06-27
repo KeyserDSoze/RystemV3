@@ -1,4 +1,5 @@
 ﻿using System.Text.Csv;
+using System.Timers;
 
 namespace Rystem.Test.ConsoleApp
 {
@@ -70,6 +71,18 @@ namespace Rystem.Test.ConsoleApp
             G = g;
             H = h;
             S = s;
+        }
+    }
+    public class Something : IBackgroundJob
+    {
+        public Task ActionToDoAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task OnException(Exception exception)
+        {
+            return Task.CompletedTask;
         }
     }
 }

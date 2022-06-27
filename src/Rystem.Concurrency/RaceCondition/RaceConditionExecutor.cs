@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Rystem.Concurrency
+﻿namespace System.Threading.Concurrent
 {
     internal sealed class RaceConditionExecutor
     {
@@ -15,22 +11,22 @@ namespace Rystem.Concurrency
             Key = id;
             TimeWindow = timeWindow == default ? TimeSpan.FromMinutes(1) : timeWindow;
         }
-        private readonly MemoryImplementation Memory = new();
-        public async Task<RaceConditionResponse> ExecuteAsync(Func<Task> action, IDistributedImplementation implementation)
+        private readonly MemoryLock Memory = new();
+        public async Task<RaceConditionResponse> ExecuteAsync(Func<Task> action, ILockable lockable)
         {
-            implementation ??= Memory;
+            lockable ??= Memory;
             LastExecutionPlusExpirationTime = DateTime.UtcNow.Add(TimeWindow);
             var isTheFirst = false;
             var isWaiting = false;
             await WaitAsync().NoContext();
             if (!isWaiting)
             {
-                if (await implementation.AcquireAsync(Key).NoContext())
+                if (await lockable.AcquireAsync(Key).NoContext())
                     isTheFirst = true;
                 if (!isTheFirst)
                     await WaitAsync().NoContext();
             }
-            Exception exception = default;
+            Exception exception = default!;
             if (isTheFirst && !isWaiting)
             {
                 try
@@ -41,13 +37,13 @@ namespace Rystem.Concurrency
                 {
                     exception = ex;
                 }
-                await implementation.ReleaseAsync(Key).NoContext();
+                await lockable.ReleaseAsync(Key).NoContext();
             }
-            return new RaceConditionResponse(isTheFirst && !isWaiting, exception != default ? new List<Exception>() { exception } : null);
+            return new RaceConditionResponse(isTheFirst && !isWaiting, exception != default ? new List<Exception>() { exception } : new());
 
             async Task WaitAsync()
             {
-                while (await implementation.IsAcquiredAsync(Key).NoContext())
+                while (await lockable.IsAcquiredAsync(Key).NoContext())
                 {
                     isWaiting = true;
                     await Task.Delay(4).NoContext();

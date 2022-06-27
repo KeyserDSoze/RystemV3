@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace Rystem.Background
 {
@@ -16,7 +15,7 @@ namespace Rystem.Background
             int count = Queues.Count;
             for (int i = 0; i < count; i++)
             {
-                Queues.TryDequeue(out T value);
+                Queues.TryDequeue(out T? value);
                 if (value != null)
                     entities.Add(value);
             }

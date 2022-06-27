@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace Rystem.Background
 {
@@ -28,7 +29,9 @@ namespace Rystem.Background
                 foreach (var toRefresh in containersToRefresh)
                     toRefresh.Invoke();
             };
-            return loop.RunInBackgroundAsync(typeof(Sequences).FullName, () => 1000 * 60);
+#warning to manage
+            //return BackgroundJobManager.Instance.AddTaskAsync(loop, typeof(Sequences).FullName!, () => 1000 * 60);
+            return Task.CompletedTask;
         }
         public void Create<T>(SequenceProperty<T> property, QueueType type)
         {
@@ -56,7 +59,7 @@ namespace Rystem.Background
         }
         public void Destroy(string id)
         {
-            IQueueContainer queueContainer = default;
+            IQueueContainer queueContainer = null!;
             if (Queues.ContainsKey(id))
                 lock (Semaphore)
                     if (Queues.ContainsKey(id))
@@ -72,7 +75,7 @@ namespace Rystem.Background
             if (!Queues.ContainsKey(queueId))
                 throw new ArgumentException($"{queueId} not found. Please install before using, use Queue.Create method.");
             var queue = Queues[queueId];
-            if (queue.Add(element))
+            if (queue.Add(element!))
                 queue.Invoke();
         }
         private interface IQueueContainer

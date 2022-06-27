@@ -1,35 +1,91 @@
-﻿namespace System.Threading
+﻿using Cronos;
+using System.Collections.Concurrent;
+using System.Threading.Concurrent;
+
+namespace System.Timers
 {
-    public sealed record BackgroundJobManager(string Id = "")
+    public interface IBackgroundJobManager
     {
-        /// <summary>
-        /// Method that allows task to run continuously in background.
-        /// </summary>
-        /// <param name="task">Action to perform.</param>
-        /// <param name="nextRunningTime">Function that has to return a value in milliseconds. Default time is 120ms.</param>
-        /// <param name="runImmediately">Run immediately at the start.</param>
-        public Task RunAsync(Action task, Func<double> nextRunningTime = default, bool runImmediately = false)
-            => RunInBackgroundAsync(task, Id, nextRunningTime, runImmediately);
-        /// <summary>
-        /// Method that allows task to run continuously in background.
-        /// </summary>
-        /// <param name="task">Action to perform.</param>
-        /// <param name="id">Task id that runs in background.</param>
-        /// <param name="nextRunningTime">Function that has to return a value in milliseconds. Default time is 120ms.</param>
-        /// <param name="runImmediately">Run immediately at the start.</param>
-        public Task RunAsync(Func<Task> task,Func<double> nextRunningTime = default, bool runImmediately = false)
-            => task.RunInBackgroundAsync(Id, nextRunningTime, runImmediately);
-        /// <summary>
-        /// Remove a task from the continuously running by its id.
-        /// </summary>
-        /// <param name="id">Task id that runs in background.</param>
-        public Task StopAsync()
-            => BackgroundJobExtensions.StopRunningInBackgroundAsync(null, Id);
-        /// <summary>
-        /// Get if your task is running.
-        /// </summary>
-        /// <param name="id">Task id that runs in background.</param>
-        public bool IsRunning()
-            => BackgroundJobExtensions.IsRunning(null, Id);
+        Task RunAsync(IBackgroundJob job,
+            BackgroundJobOptions options,
+            Func<IBackgroundJob>? factory = null,
+            CancellationToken cancellationToken = default);
+    }
+    internal sealed class BackgroundJobManager : IBackgroundJobManager
+    {
+        private readonly ConcurrentDictionary<string, Timer> Actions = new();
+        private readonly ILock _lockService;
+
+        public BackgroundJobManager(ILock lockService)
+        {
+            _lockService = lockService;
+        }
+        public Task RunAsync(IBackgroundJob job,
+            BackgroundJobOptions options,
+            Func<IBackgroundJob>? factory = null,
+            CancellationToken cancellationToken = default)
+        {
+            string key = $"BackgroundWork_{options.Key}_{job.GetType().FullName}";
+            return _lockService
+                .ExecuteAsync(async () =>
+                {
+                    if (Actions.ContainsKey(key))
+                    {
+                        Actions[key].Stop();
+                        Actions.TryRemove(key, out _);
+                    }
+                    if (options.RunImmediately)
+                    {
+                        try
+                        {
+                            await job.ActionToDoAsync().NoContext();
+                        }
+                        catch (Exception ex)
+                        {
+                            await job.OnException(ex).NoContext();
+                        }
+                    }
+                    NewTimer();
+
+                    void NewTimer()
+                    {
+                        var expression = CronExpression.Parse(options.Cron, options.Cron?.Split(' ').Length > 5 ? CronFormat.IncludeSeconds : CronFormat.Standard);
+                        var nextRunningTime = expression.GetNextOccurrence(DateTime.UtcNow, true)?.Subtract(DateTime.UtcNow).TotalMilliseconds ?? 120;
+                        bool runAction = true;
+                        if (nextRunningTime > int.MaxValue)
+                        {
+                            runAction = false;
+                            nextRunningTime = int.MaxValue;
+                        }
+                        var nextTimeTimer = new Timer
+                        {
+                            Interval = nextRunningTime
+                        };
+                        nextTimeTimer.Elapsed += async (x, e) =>
+                        {
+                            job = factory?.Invoke() ?? job;
+                            nextTimeTimer.Stop();
+                            Actions.TryRemove(key, out _);
+                            if (!(cancellationToken != default && cancellationToken.IsCancellationRequested))
+                            {
+                                if (runAction)
+                                {
+                                    try
+                                    {
+                                        await job.ActionToDoAsync().NoContext();
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        await job.OnException(ex).NoContext();
+                                    }
+                                }
+                                NewTimer();
+                            }
+                        };
+                        nextTimeTimer.Start();
+                        Actions.TryAdd(key, nextTimeTimer);
+                    }
+                }, $"{nameof(BackgroundJobOptions)}{key}");
+        }
     }
 }

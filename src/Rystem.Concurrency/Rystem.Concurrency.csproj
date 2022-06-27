@@ -18,19 +18,16 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-	</ItemGroup>
+	
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<ItemGroup>
-				<ProjectReference Include="..\Rystem\Rystem.csproj" />
+				<ProjectReference Include="..\Rystem.DependencyInjectionExtensions\Rystem.DependencyInjectionExtensions.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem" Version="0.9.9" />
+				<PackageReference Include="Rystem.DependencyInjectionExtensions" Version="0.9.9" />
 			</ItemGroup>
 		</When>
 	</Choose>

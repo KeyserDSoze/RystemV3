@@ -1,27 +1,23 @@
 ﻿namespace System.Threading.Concurrent
 {
-    internal sealed class RaceConditionExecutor
+    internal sealed class RaceConditionExecutor : IRaceCodition
     {
-        private DateTime LastExecutionPlusExpirationTime;
-        internal bool IsExpired => DateTime.UtcNow > LastExecutionPlusExpirationTime;
-        private readonly string Key;
-        private readonly TimeSpan TimeWindow;
-        public RaceConditionExecutor(string id, TimeSpan timeWindow)
+        private readonly ILockable _lockable;
+        public RaceConditionExecutor(ILockable lockable)
         {
-            Key = id;
-            TimeWindow = timeWindow == default ? TimeSpan.FromMinutes(1) : timeWindow;
+            _lockable = lockable;
         }
-        private readonly MemoryLock Memory = new();
-        public async Task<RaceConditionResponse> ExecuteAsync(Func<Task> action, ILockable lockable)
+        public async Task<RaceConditionResponse> ExecuteAsync(Func<Task> action, string? key = null, TimeSpan? timeWindow = null)
         {
-            lockable ??= Memory;
-            LastExecutionPlusExpirationTime = DateTime.UtcNow.Add(TimeWindow);
+            key ??= string.Empty;
+            timeWindow ??= TimeSpan.FromMinutes(1);
+            DateTime nextRelease = DateTime.UtcNow.Add(timeWindow.Value);
             var isTheFirst = false;
             var isWaiting = false;
             await WaitAsync().NoContext();
             if (!isWaiting)
             {
-                if (await lockable.AcquireAsync(Key).NoContext())
+                if (await _lockable.AcquireAsync(key).NoContext())
                     isTheFirst = true;
                 if (!isTheFirst)
                     await WaitAsync().NoContext();
@@ -32,18 +28,25 @@
                 try
                 {
                     await action.Invoke().NoContext();
+                    while (DateTime.UtcNow < nextRelease)
+                    {
+                        int milliseconds = (int)nextRelease.Subtract(DateTime.UtcNow).TotalMilliseconds;
+                        if (milliseconds < 0)
+                            break;
+                        await Task.Delay(milliseconds).NoContext();
+                    }
                 }
                 catch (Exception ex)
                 {
                     exception = ex;
                 }
-                await lockable.ReleaseAsync(Key).NoContext();
+                await _lockable.ReleaseAsync(key).NoContext();
             }
             return new RaceConditionResponse(isTheFirst && !isWaiting, exception != default ? new List<Exception>() { exception } : new());
 
             async Task WaitAsync()
             {
-                while (await lockable.IsAcquiredAsync(Key).NoContext())
+                while (await _lockable.IsAcquiredAsync(key).NoContext())
                 {
                     isWaiting = true;
                     await Task.Delay(4).NoContext();

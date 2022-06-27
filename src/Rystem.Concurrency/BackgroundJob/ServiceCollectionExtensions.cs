@@ -3,7 +3,7 @@ using System.Timers;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static partial class BackgroundJobExtensions
+    public static partial class ServiceCollectionExtensions
     {
         public static IServiceCollection AddBackgroundJobManager<TJobManager>(this IServiceCollection services)
             where TJobManager : class, IBackgroundJobManager
@@ -13,6 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TJob : class, IBackgroundJob
         {
             services.TryAddSingleton<IBackgroundJobManager, BackgroundJobManager>();
+            services.AddLock();
             services.AddTransient<TJob>();
             var bOptions = new BackgroundJobOptions()
             {
@@ -28,28 +29,15 @@ namespace Microsoft.Extensions.DependencyInjection
             BackgroundJobOptions options)
             where TJob : class, IBackgroundJob
         {
-            var backgroundJob = serviceProvider.CreateScope().ServiceProvider.GetService<IBackgroundJobManager>();
-            if (backgroundJob != null)
+            var services = serviceProvider.CreateScope().ServiceProvider;
+            var backgroundJobManager = services.GetService<IBackgroundJobManager>();
+            if (backgroundJobManager != null)
             {
                 string key = $"BackgroundWork_{options.Key}_{typeof(TJob).FullName}";
-                backgroundJob.AddTaskAsync(
-                    async () =>
-                    {
-                        try
-                        {
-                            if (entity != default)
-                                await entity.ActionToDoAsync().NoContext();
-                        }
-                        catch (Exception exception)
-                        {
-                            if (entity != default)
-                                await entity.OnException(exception).NoContext();
-                        }
-                    },
-                    typeof(TJob).FullName,
-                    () => expression.GetNextOccurrence(DateTime.UtcNow, true)?.Subtract(DateTime.UtcNow).TotalMilliseconds ?? 120,
-                    options.RunImmediately
-                    );
+                backgroundJobManager.RunAsync(
+                    serviceProvider.GetService<TJob>()!,
+                    options,
+                    () => services.CreateScope().ServiceProvider.GetService<TJob>() ?? throw new ArgumentException($"Background job {typeof(TJob).Name} not found."));
             }
             else
                 throw new ArgumentException("Background job manager not found.");

@@ -2,7 +2,7 @@
 
 namespace Rystem
 {
-    internal class ServiceProviderUtility
+    internal sealed class ServiceProviderUtility
     {
         public static ServiceProviderUtility Instance { get; set;} = new();
         private ServiceProviderUtility() { }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Rystem;
+﻿using Rystem;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -21,11 +20,11 @@ namespace Microsoft.Extensions.DependencyInjection
             };
             return services;
         }
-        public static async Task<TApplicationBuilder> WarmUp<TApplicationBuilder>(this TApplicationBuilder builder)
-            where TApplicationBuilder : IApplicationBuilder
+        public static async Task<TServiceProvider> WarmUpAsync<TServiceProvider>(this TServiceProvider serviceProvider)
+            where TServiceProvider : IServiceProvider
         {
-            await ServiceProviderUtility.Instance.AfterBuildAsync(builder.ApplicationServices);
-            return builder;
+            await ServiceProviderUtility.Instance.AfterBuildAsync(serviceProvider);
+            return serviceProvider;
         }
     }
 }

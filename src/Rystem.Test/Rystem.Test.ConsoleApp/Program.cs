@@ -1,10 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Moq;
 using Rystem.Test.ConsoleApp;
-using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text.Csv;
-using System.Timers;
 
 Console.WriteLine("Hello, World!");
 
@@ -78,15 +75,3 @@ var x = users.ToCsv('&');
 
 var t = x.FromCsv<List<User>>('&');
 Console.WriteLine(t.Count);
-
-var something = new Something();
-something.Run(new()
-{
-    Cron = "* */1 * * *",
-    RunImmediately = true,
-    Key = nameof(Something)
-});
-while (true)
-{
-    await Task.Delay(10_000);
-}

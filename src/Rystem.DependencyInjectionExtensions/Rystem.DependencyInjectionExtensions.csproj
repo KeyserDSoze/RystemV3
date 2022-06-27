@@ -20,19 +20,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 	</ItemGroup>
 
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<ItemGroup>
-				<ProjectReference Include="..\Rystem.Concurrency\Rystem.Concurrency.csproj" />
+				<ProjectReference Include="..\Rystem\Rystem.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.Concurrency" Version="0.9.9" />
+				<PackageReference Include="Rystem" Version="0.9.9" />
 			</ItemGroup>
 		</When>
 	</Choose>

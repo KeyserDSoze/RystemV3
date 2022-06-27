@@ -7,13 +7,13 @@
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Rystem</Product>
-		<Description>Rystem.RepositoryFramework allows you to use correctly concepts like repository pattern, CQRS and DDD. You have interfaces for your domains, auto-generated api, auto-generated HttpClient to simplify connection "api to front-end", a functionality for auto-population in memory of your models, a functionality to simulate exceptions and waiting time from external sources to improve your implementation/business test and load test.</Description>
+		<Description>Rystem.</Description>
 		<Copyright>2022</Copyright>
 		<PackageIcon>rystem.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem</PackageId>
-		<Version>0.9.9</Version>
+		<Version>4.0.0</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -30,12 +30,6 @@
 			<PackagePath>\</PackagePath>
 		</None>
 		<None Update="README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
-
-	
-
-	<ItemGroup>
-	  <Folder Include="System.Linq.Expressions\ExpressionsInterpreter\" />
 	</ItemGroup>
 
 </Project>

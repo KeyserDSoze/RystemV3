@@ -13,9 +13,17 @@ builder.Services.AddWarmUp(serviceLocator =>
 });
 // Add services to the container.
 builder.Services.AddRazorPages();
-
+builder.Services.AddBackgroundJob<BackgroundJob>(
+                x =>
+                {
+                    x.Cron = "*/1 * * * *";
+                    x.RunImmediately = true;
+                    x.Key = "alzo";
+                }).AddSingleton<SingletonService>()
+                .AddScoped<ScopedService>()
+                .AddTransient<TransientService>();
 var app = builder.Build();
-await app.WarmUp();
+await app.Services.WarmUpAsync();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

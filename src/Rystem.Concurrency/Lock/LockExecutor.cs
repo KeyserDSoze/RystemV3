@@ -1,10 +1,6 @@
 ﻿namespace System.Threading.Concurrent
 {
-    public interface ILock
-    {
-        Task<LockResponse> ExecuteAsync(Func<Task> action, string? key = null);
-    }
-    public sealed class LockExecutor : ILock
+    internal sealed class LockExecutor : ILock
     {
         private DateTime _lastExecutionPlusExpirationTime;
         internal bool IsExpired => DateTime.UtcNow > _lastExecutionPlusExpirationTime;
@@ -13,10 +9,9 @@
         {
             _lockable = lockable;
         }
-
         public async Task<LockResponse> ExecuteAsync(Func<Task> action, string? key = null)
         {
-            key = key ?? string.Empty;
+            key ??= string.Empty;
             DateTime start = DateTime.UtcNow;
             _lastExecutionPlusExpirationTime = start.AddDays(1);
             while (true)

@@ -4,13 +4,6 @@ using System.Threading.Concurrent;
 
 namespace System.Timers
 {
-    public interface IBackgroundJobManager
-    {
-        Task RunAsync(IBackgroundJob job,
-            BackgroundJobOptions options,
-            Func<IBackgroundJob>? factory = null,
-            CancellationToken cancellationToken = default);
-    }
     internal sealed class BackgroundJobManager : IBackgroundJobManager
     {
         private readonly ConcurrentDictionary<string, Timer> Actions = new();

@@ -22,12 +22,12 @@
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<ItemGroup>
-				<ProjectReference Include="..\Rystem.Concurrency\Rystem.Concurrency.csproj" />
+				<ProjectReference Include="..\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.Concurrency" Version="0.9.9" />
+				<PackageReference Include="Rystem.BackgroundJob" Version="0.9.9" />
 			</ItemGroup>
 		</When>
 	</Choose>

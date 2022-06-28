@@ -1,4 +1,4 @@
-﻿namespace Rystem.Background
+﻿namespace Rystem.Queue
 {
     public enum QueueType
     {

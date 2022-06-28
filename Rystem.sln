@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.BackgroundJob", "src\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj", "{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Queue.Test.UnitTest", "src\Rystem.Test\Rystem.Queue.Test.UnitTest\Rystem.Queue.Test.UnitTest.csproj", "{601CA915-7ADE-4121-B647-7648210AB5AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{601CA915-7ADE-4121-B647-7648210AB5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{601CA915-7ADE-4121-B647-7648210AB5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{601CA915-7ADE-4121-B647-7648210AB5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{601CA915-7ADE-4121-B647-7648210AB5AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{91EC3697-72E2-4293-B92B-ECEF94B50615} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{62E51893-F666-4418-82BC-74E13F3D75B1} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{F00C421B-7D31-4474-AE44-063318131E97} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
+		{601CA915-7ADE-4121-B647-7648210AB5AA} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1123D92B-0720-49C1-90DA-0AA7FEF5EE2C}

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,24 +13,28 @@
 		<PackageIcon>rystem.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
-		<PackageId>Rystem.Concurrency</PackageId>
-		<Version>0.9.10</Version>
+		<PackageId>Rystem.BackgroundJob</PackageId>
+		<Version>0.9.9</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
-	
+
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<ItemGroup>
-				<ProjectReference Include="..\Rystem.DependencyInjectionExtensions\Rystem.DependencyInjectionExtensions.csproj" />
+				<ProjectReference Include="..\Rystem.Concurrency\Rystem.Concurrency.csproj" />
 			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'!='Debug' ">
 			<ItemGroup>
-				<PackageReference Include="Rystem.DependencyInjectionExtensions" Version="0.9.9" />
+				<PackageReference Include="Rystem.Concurrency" Version="0.9.10" />
 			</ItemGroup>
 		</When>
 	</Choose>
+
+	<ItemGroup>
+		<PackageReference Include="Cronos" Version="0.7.1" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\Rystem\rystem.png">

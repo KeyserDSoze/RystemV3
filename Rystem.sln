@@ -17,9 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.DependencyInjectionE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.UnitTest", "src\Rystem.Test\Rystem.Test.UnitTest\Rystem.Test.UnitTest.csproj", "{62E51893-F666-4418-82BC-74E13F3D75B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Queue", "src\Rystem.Queue\Rystem.Queue.csproj", "{FEFB9037-0876-4568-8828-C3D66988533C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Queue", "src\Rystem.Queue\Rystem.Queue.csproj", "{FEFB9037-0876-4568-8828-C3D66988533C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Concurrency.Test.UnitTest", "src\Rystem.Test\Rystem.Concurrency.Test.UnitTest\Rystem.Concurrency.Test.UnitTest.csproj", "{F00C421B-7D31-4474-AE44-063318131E97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Concurrency.Test.UnitTest", "src\Rystem.Test\Rystem.Concurrency.Test.UnitTest\Rystem.Concurrency.Test.UnitTest.csproj", "{F00C421B-7D31-4474-AE44-063318131E97}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5DD2E4D-F4A7-4BBF-B7E4-6FE4C42F6227}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,11 +28,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml = .github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml
 		.github\workflows\PackageDeploy.Rystem.Queue.yml = .github\workflows\PackageDeploy.Rystem.Queue.yml
 		.github\workflows\PackageDeploy.Rystem.yml = .github\workflows\PackageDeploy.Rystem.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.BackgroundJob", "src\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj", "{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.BackgroundJob", "src\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj", "{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.Queue.Test.UnitTest", "src\Rystem.Test\Rystem.Queue.Test.UnitTest\Rystem.Queue.Test.UnitTest.csproj", "{601CA915-7ADE-4121-B647-7648210AB5AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Queue.Test.UnitTest", "src\Rystem.Test\Rystem.Queue.Test.UnitTest\Rystem.Queue.Test.UnitTest.csproj", "{601CA915-7ADE-4121-B647-7648210AB5AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

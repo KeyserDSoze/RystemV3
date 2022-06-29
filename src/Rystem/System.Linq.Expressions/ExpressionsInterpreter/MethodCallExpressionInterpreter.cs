@@ -6,15 +6,21 @@
 
         public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
         {
+            List<ExpressionBearer> expressions = new();
             if (bearer.Expression is MethodCallExpression methodCallExpression)
             {
                 if (methodCallExpression.Arguments.Count > 0)
                     foreach (var argument in methodCallExpression.Arguments)
-                        context.CompileAndReplace(argument);
+                    {
+                        if (argument is Expression)
+                            expressions.Add(new(argument));
+                        else
+                            context.CompileAndReplace(argument);
+                    }
                 else
                     context.CompileAndReplace(methodCallExpression);
             }
-            return null;
+            return expressions;
         }
     }
 }

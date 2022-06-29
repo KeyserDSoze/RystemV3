@@ -18,8 +18,18 @@
         public static async Task<StopwatchResult> MonitorAsync(this Task action)
         {
             var start = Start();
-            await action;
+            await action.NoContext();
             return start.Stop();
+        }
+        public static async Task<(T Result, StopwatchResult Stopwatch)> MonitorAsync<T>(this Func<Task<T>> action)
+        {
+            var start = Start();
+            return (await action.Invoke().NoContext(), start.Stop());
+        }
+        public static async Task<(T Result, StopwatchResult Stopwatch)> MonitorAsync<T>(this Task<T> action)
+        {
+            var start = Start();
+            return (await action.NoContext(), start.Stop());
         }
     }
 }

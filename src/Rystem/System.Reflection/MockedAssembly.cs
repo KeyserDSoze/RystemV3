@@ -2,7 +2,7 @@
 
 namespace System.Reflection
 {
-    public class MockedAssembly
+    internal class MockedAssembly
     {
         private record MockedType(Type Type);
         public static MockedAssembly Instance { get; } = new();

@@ -5,13 +5,13 @@ namespace System.Threading.Tasks
     public static class RystemTaskExtensions
     {
         public static ConfiguredTaskAwaitable NoContext(this Task task)
-            => task.ConfigureAwait(RystemTask.WaitCurrentThread);
+            => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
         public static ConfiguredTaskAwaitable<T> NoContext<T>(this Task<T> task)
-            => task.ConfigureAwait(RystemTask.WaitCurrentThread);
+            => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
         public static ConfiguredValueTaskAwaitable NoContext(this ValueTask task)
-          => task.ConfigureAwait(RystemTask.WaitCurrentThread);
+          => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
         public static ConfiguredValueTaskAwaitable<T> NoContext<T>(this ValueTask<T> task)
-            => task.ConfigureAwait(RystemTask.WaitCurrentThread);
+            => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
         public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> items)
         {
             List<T> entities = new();

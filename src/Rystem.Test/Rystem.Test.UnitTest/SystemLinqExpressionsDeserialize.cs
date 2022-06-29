@@ -15,6 +15,7 @@ namespace Rystem.Test.UnitTest
         [InlineData("ƒ => (((((ƒ.X == \"dasda\") AndAlso ƒ.Sol) AndAlso ƒ.X.Contains(\"dasda\")) AndAlso ((ƒ.E == Guid.Parse(\"bf46510b-b7e6-4ba2-88da-cef208aa81f2\")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))", 5)]
         [InlineData("ƒ => (ƒ.Type == 2)", 5)]
         [InlineData("ƒ => (((((ƒ.X == \"dasda\") AndAlso ƒ.Sol) AndAlso (ƒ.X.Contains(\"dasda\") OrElse ƒ.Sol.Equals(True))) AndAlso ((ƒ.E == Guid.Parse(\"bf46510b-b7e6-4ba2-88da-cef208aa81f2\")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))", 5)]
+        [InlineData("ƒ => ((((((ƒ.X == \"dasda\") AndAlso ƒ.Samules.Any(x => (x == \"ccccde\"))) AndAlso ƒ.Sol) AndAlso (ƒ.X.Contains(\"dasda\") OrElse ƒ.Sol.Equals(True))) AndAlso ((ƒ.E == Guid.Parse(\"bf46510b-b7e6-4ba2-88da-cef208aa81f2\")) Or (ƒ.Id == 32))) AndAlso ((ƒ.Type == 1) OrElse (ƒ.Type == 2)))", 5)]
         public void Test(string expressionAsString, int count)
         {
             var newExpression = expressionAsString.Deserialize<MakeIt, bool>();
@@ -25,7 +26,8 @@ namespace Rystem.Test.UnitTest
                 E = Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2"),
                 X = "dasda",
                 Sol = true,
-                Type = MakeType.Wrong
+                Type = MakeType.Wrong,
+                Samules = new() { "a", "b", "ccccde" }
             };
             List<MakeIt> makes = new()
             {

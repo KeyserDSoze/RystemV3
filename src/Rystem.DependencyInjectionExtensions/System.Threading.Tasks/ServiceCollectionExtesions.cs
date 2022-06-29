@@ -5,7 +5,7 @@
 
         public static IServiceCollection AddWaitingTheSameThreadThatStartedTheTaskWhenUseNoContext(this IServiceCollection services)
         {
-            RystemTask.WaitCurrentThread = true;
+            RystemTask.WaitYourStartingThread = true;
             return services;
         }
     }

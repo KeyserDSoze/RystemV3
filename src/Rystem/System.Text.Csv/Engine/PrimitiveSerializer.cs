@@ -18,6 +18,8 @@ namespace System.Text.Csv
         {
             if (type == typeof(string))
                 return value;
+            else if (type == typeof(Guid))
+                return Guid.Parse(value);
 
             if (string.IsNullOrWhiteSpace(value))
                 if (type.IsValueType)

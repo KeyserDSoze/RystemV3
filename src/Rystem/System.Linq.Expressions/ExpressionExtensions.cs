@@ -8,5 +8,9 @@
             => ExpressionSerializer.Deserialize<T, TResult>(expressionAsString);
         public static Expression<Func<TResult>> Deserialize<TResult>(this string expressionAsString)
             => ExpressionSerializer.Deserialize<TResult>(expressionAsString);
+        public static Func<T, TResult> DeserializeAndCompile<T, TResult>(this string expressionAsString)
+            => ExpressionSerializer.Deserialize<T, TResult>(expressionAsString).Compile();
+        public static Func<TResult> DeserializeAndCompile<TResult>(this string expressionAsString)
+            => ExpressionSerializer.Deserialize<TResult>(expressionAsString).Compile();
     }
 }

@@ -2,6 +2,6 @@
 {
     public static class RystemTask
     {
-        public static bool WaitCurrentThread = false;
+        public static bool WaitYourStartingThread = false;
     }
 }

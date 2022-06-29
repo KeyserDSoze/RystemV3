@@ -5,11 +5,11 @@ using System.Text.Csv;
 
 Console.WriteLine("Hello, World!");
 
-var user2 = MockedAssembly.Instance.CreateInstance<IUser>();
+var user2 = Mocking.CreateInstance<IUser>();
 user2.Name = "falnde";
-var user3 = MockedAssembly.Instance.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g", "h", "s");
-var user4 = MockedAssembly.Instance.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g", "h");
-var user5 = MockedAssembly.Instance.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g");
+var user3 = Mocking.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g", "h", "s");
+var user4 = Mocking.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g", "h");
+var user5 = Mocking.CreateInstance<AUser>("a", "b", "c", "d", "e", "f", "g");
 user3.Name = "dadsad";
 //user3.Axa = "dasdsa";
 user3.Alof = "eeeee";

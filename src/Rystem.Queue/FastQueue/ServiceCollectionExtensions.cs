@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddBackgroundJob<QueueJobManager<T>>(x =>
             {
                 x.Cron = settings.MaximumRetentionCronFormat;
-                x.RunImmediately = true;
+                x.RunImmediately = false;
             });
             return services;
         }

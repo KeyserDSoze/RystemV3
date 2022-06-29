@@ -9,14 +9,17 @@
             var expressions = new List<ExpressionBearer>();
             if (bearer.Expression is MemberExpression memberExpression)
             {
-                if (memberExpression.Expression == null)
-                    context.CompileAndReplace(memberExpression);
-                else
-                    expressions.Add(new(memberExpression.Expression)
-                    {
-                        Key = memberExpression.ToString(),
-                        Member = memberExpression.Member,
-                    });
+                if (!context.IsAnArgument(memberExpression.Member.DeclaringType))
+                {
+                    if (memberExpression.Expression == null)
+                        context.CompileAndReplace(memberExpression);
+                    else
+                        expressions.Add(new(memberExpression.Expression)
+                        {
+                            Key = memberExpression.ToString(),
+                            Member = memberExpression.Member,
+                        });
+                }                
             }
             return expressions;
         }

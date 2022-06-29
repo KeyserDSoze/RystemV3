@@ -7,7 +7,10 @@
         public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
         {
             if (bearer.Expression is LambdaExpression lambdaExpression)
+            {
+                context.Arguments.AddRange(lambdaExpression.Parameters.Select(x => x.Type));
                 return new List<ExpressionBearer>() { new ExpressionBearer(lambdaExpression.Body) };
+            }
             return null;
         }
     }

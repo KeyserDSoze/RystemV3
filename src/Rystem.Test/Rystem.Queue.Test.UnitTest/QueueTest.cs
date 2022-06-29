@@ -18,24 +18,34 @@ namespace Rystem.Queue.Test.UnitTest
             IServiceCollection services = new ServiceCollection()
                 .AddQueue<Sample>(x =>
                 {
+                    x.MaximumBuffer = 1000;
                     x.Actions.Add(t =>
                     {
                         var q = t;
                         return Task.CompletedTask;
                     });
-                    x.MaximumRetentionCronFormat = "*/10 * * * * *";
+                    x.MaximumRetentionCronFormat = "*/3 * * * * *";
                 });
             _serviceProvider = services.BuildServiceProvider();
             _serviceProvider.WarmUpAsync().ToResult();
         }
         [Fact]
-        public async Task SingleRun()
+        public async Task ExpiryRun()
         {
             var queue = _serviceProvider.GetService<IQueue<Sample>>()!;
             for (int i = 0; i < 100; i++)
                 await queue.AddAsync(new Sample() { Id = i.ToString() });
             Assert.Equal(100, await queue.CountAsync());
-            await Task.Delay(20_000).NoContext();
+            await Task.Delay(7_000);
+            Assert.Equal(0, await queue.CountAsync());
+        }
+        [Fact]
+        public async Task MoreThan1000Run()
+        {
+            var queue = _serviceProvider.GetService<IQueue<Sample>>()!;
+            for (int i = 0; i < 1001; i++)
+                await queue.AddAsync(new Sample() { Id = i.ToString() });
+            await Task.Delay(4_000);
             Assert.Equal(0, await queue.CountAsync());
         }
     }

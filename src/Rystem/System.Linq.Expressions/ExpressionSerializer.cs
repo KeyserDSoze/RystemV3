@@ -2,7 +2,7 @@
 
 namespace System.Linq.Expressions
 {
-    internal sealed class ExpressionSerializer
+    internal static class ExpressionSerializer
     {
         private static readonly List<IExpressionInterpreter> interpreters = new();
         static ExpressionSerializer()
@@ -12,11 +12,12 @@ namespace System.Linq.Expressions
             interpreters.Add(new MethodCallExpressionInterpreter());
             interpreters.Add(new MemberExpressionInterpreter());
             interpreters.Add(new ParameterExpressionInterpreter());
+            interpreters.Add(new UnaryExpressionInterpreter());
             interpreters.Add(new LambdaExpressionInterpreter());
         }
         public static string Serialize(Expression expression)
         {
-            ExpressionContext context = new(expression.ToString());
+            ExpressionContext context = new(expression);
             Serialize(context, new ExpressionBearer(expression));
             return context.ExpressionAsString;
         }

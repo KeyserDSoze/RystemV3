@@ -2,7 +2,7 @@
 
 namespace Rystem.Queue
 {
-    internal sealed class MemoryStack<T> : IQueue<T>
+    internal sealed class MemoryStackQueue<T> : IQueue<T>
     {
         private readonly ConcurrentStack<T> Queues = new();
         public Task AddAsync(T entity)

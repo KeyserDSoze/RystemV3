@@ -6,7 +6,7 @@ namespace System.Threading.Concurrent
     {
         private readonly object _semaphore = new();
         private readonly ConcurrentDictionary<string, bool> _isLocked = new();
-        public Task<bool> AcquireAsync(string key)
+        public Task<bool> AcquireAsync(string key, TimeSpan? maxWindow = null)
         {
             if (!_isLocked.ContainsKey(key))
                 _isLocked.TryAdd(key, false);

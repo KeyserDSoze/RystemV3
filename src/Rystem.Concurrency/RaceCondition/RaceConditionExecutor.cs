@@ -17,7 +17,7 @@
             await WaitAsync().NoContext();
             if (!isWaiting)
             {
-                if (await _lockable.AcquireAsync(key).NoContext())
+                if (await _lockable.AcquireAsync(key, timeWindow).NoContext())
                     isTheFirst = true;
                 if (!isTheFirst)
                     await WaitAsync().NoContext();

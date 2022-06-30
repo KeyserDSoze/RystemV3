@@ -16,7 +16,7 @@ namespace Rystem.Queue.Test.UnitTest
         static QueueTest()
         {
             IServiceCollection services = new ServiceCollection()
-                .AddQueue<Sample>(x =>
+                .AddMemoryQueue<Sample>(x =>
                 {
                     x.MaximumBuffer = 1000;
                     x.Actions.Add(t =>

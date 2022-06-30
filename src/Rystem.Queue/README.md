@@ -1,7 +1,7 @@
 ﻿## Queue
 You have to configure it in DI
 
-	services.AddQueue<Sample>(x =>
+	services.AddMemoryQueue<Sample>(x =>
         {
             x.MaximumBuffer = 1000;
             x.Actions.Add(items =>
@@ -27,4 +27,37 @@ and inject to use it
     for (int i = 0; i < 100; i++)
         await queue.AddAsync(new Sample() { Id = i.ToString() });
 
-In this example, after 1000 elements or 3 seconds the configured actions will be fired.
+In this example, after 1000 elements or 3 seconds the configured actions will be fired and the queue will be emptied.
+
+### Stack (Last In First Out)
+
+    services.AddMemoryStackQueue<Sample>(x =>
+        {
+            x.MaximumBuffer = 1000;
+            x.Actions.Add(items =>
+            {
+                foreach(var item in items)
+                {
+                    //do something
+                }
+                return Task.CompletedTask;
+            });
+            x.MaximumRetentionCronFormat = "*/3 * * * * *";
+        });
+
+### Custom integration
+If you want to use a distributed queue like storage queue, or event hub or service bus or event grid, you can write your own integration and configure it.
+
+    services.AddQueueIntegration<Sample, YourQueueIntegration>(x =>
+        {
+            x.MaximumBuffer = 1000;
+            x.Actions.Add(items =>
+            {
+                foreach(var item in items)
+                {
+                    //do something
+                }
+                return Task.CompletedTask;
+            });
+            x.MaximumRetentionCronFormat = "*/3 * * * * *";
+        });

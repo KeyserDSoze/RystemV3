@@ -11,10 +11,12 @@
             {
                 if (unaryExpression.Operand != null && unaryExpression.Operand is MemberExpression memberExpression)
                 {
-                    if (!context.IsAnArgument(memberExpression.Member.DeclaringType))
+                    var memberExpressionAsString = memberExpression.ToString();
+                    string name = memberExpressionAsString.Split('.').First();
+                    if (!context.IsAnArgument(name, memberExpression.Member.DeclaringType))
                         context.CompileAndReplace(unaryExpression);
                     else
-                        context.DirectReplace(unaryExpression.ToString(), memberExpression.ToString());
+                        context.DirectReplace(unaryExpression.ToString(), memberExpressionAsString);
                 }
                 else if (unaryExpression.Operand != null)
                     expressions.Add(new(unaryExpression.Operand));

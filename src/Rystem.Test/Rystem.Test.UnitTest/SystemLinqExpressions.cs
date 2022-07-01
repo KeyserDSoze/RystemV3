@@ -24,6 +24,31 @@ namespace Rystem.Test.UnitTest
             public MakeType Type { get; set; }
             public List<string> Samules { get; set; }
         }
+        public class IperUser : User
+        {
+            public IperUser(string email) : base(email)
+            {
+            }
+        }
+        public class SuperUser : User
+        {
+            public SuperUser(string email) : base(email)
+            {
+            }
+        }
+        public class User
+        {
+            public string? Id { get; set; }
+            public string? Name { get; set; }
+            public string? Email { get; }
+            public int Port { get; set; }
+            public bool IsAdmin { get; set; }
+            public Guid GroupId { get; set; }
+            public User(string email)
+            {
+                Email = email;
+            }
+        }
         private const int V = 32;
         [Fact]
         public void Test1()
@@ -77,6 +102,16 @@ namespace Rystem.Test.UnitTest
             var id = Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2");
             var qq = MakeType.Wrong;
             Expression<Func<MakeIt, bool>> expression = ƒ => ƒ.X == q && ƒ.Samules.Any(x => x == k) && ƒ.Sol && (ƒ.X.Contains(q) || ƒ.Sol.Equals(IsOk)) && (ƒ.E == id | ƒ.Id == V) && (ƒ.Type == MakeType.Yes || ƒ.Type == qq);
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
+        [Fact]
+        public void Test6()
+        {
+            string result = "x => x.Email.Contains(\"@gmail.com\")";
+            Guid alfa = Guid.Parse("db429642-94e3-436d-8880-6160575978b6");
+            var user = new User("@gmail.com");
+            Expression<Func<User, bool>> expression = x => x.Email!.Contains(user.Email!);
             var serialized = expression.Serialize();
             Assert.Equal(result, serialized);
         }

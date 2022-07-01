@@ -3,7 +3,7 @@
     internal sealed record ExpressionContext
     {
         public string ExpressionAsString { get; private set; }
-        public List<Type> Arguments { get; } = new();
+        public List<ArgumentValue> Arguments { get; } = new();
         public ExpressionContext(Expression expression)
         {
             ExpressionAsString = expression.ToString();
@@ -16,8 +16,8 @@
         {
             ExpressionAsString = ExpressionAsString.Replace(key, value, 1);
         }
-        public bool IsAnArgument(Type? type) 
-            => type != null && Arguments.Any(x => x == type);
+        public bool IsAnArgument(string name, Type? type)
+            => type != null && Arguments.Any(x => x.Name == name && x.Type == type);
         public void CompileAndReplace(Expression argument)
         {
             try

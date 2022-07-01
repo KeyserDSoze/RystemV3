@@ -9,17 +9,19 @@
             var expressions = new List<ExpressionBearer>();
             if (bearer.Expression is MemberExpression memberExpression)
             {
-                if (!context.IsAnArgument(memberExpression.Member.DeclaringType))
+                var memberExpressionAsString = memberExpression.ToString();
+                string name = memberExpressionAsString.Split('.').First();
+                if (!context.IsAnArgument(name, memberExpression.Member.DeclaringType))
                 {
-                    if (memberExpression.Expression == null)
+                    if (memberExpression.Expression == null || name.StartsWith("value("))
                         context.CompileAndReplace(memberExpression);
                     else
                         expressions.Add(new(memberExpression.Expression)
                         {
-                            Key = memberExpression.ToString(),
+                            Key = memberExpressionAsString,
                             Member = memberExpression.Member,
                         });
-                }                
+                }
             }
             return expressions;
         }

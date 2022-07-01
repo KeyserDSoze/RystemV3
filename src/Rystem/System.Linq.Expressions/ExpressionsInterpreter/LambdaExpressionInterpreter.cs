@@ -8,7 +8,7 @@
         {
             if (bearer.Expression is LambdaExpression lambdaExpression)
             {
-                context.Arguments.AddRange(lambdaExpression.Parameters.Select(x => x.Type));
+                context.Arguments.AddRange(lambdaExpression.Parameters.Select(x => new ArgumentValue(x.Name!, x.Type)));
                 return new List<ExpressionBearer>() { new ExpressionBearer(lambdaExpression.Body) };
             }
             return null;

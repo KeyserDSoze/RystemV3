@@ -13,7 +13,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RepositoryFramework</RepositoryUrl>
 		<PackageId>Rystem</PackageId>
-		<Version>4.0.3</Version>
+		<Version>4.0.4</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
@@ -21,8 +21,6 @@
 	<ItemGroup>
 	  <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
 	</ItemGroup>
-
-	
 
 	<ItemGroup>
 		<None Update="rystem.png">

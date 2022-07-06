@@ -23,6 +23,8 @@ namespace Rystem.Test.UnitTest
             public bool Sol { get; set; }
             public MakeType Type { get; set; }
             public List<string> Samules { get; set; }
+            public DateTime ExpirationTime { get; set; }
+            public TimeSpan TimeSpan { get; set; }
         }
         public class IperUser : User
         {
@@ -44,6 +46,8 @@ namespace Rystem.Test.UnitTest
             public int Port { get; set; }
             public bool IsAdmin { get; set; }
             public Guid GroupId { get; set; }
+            public DateTime ExpirationTime { get; set; }
+            public TimeSpan TimeSpan { get; set; }
             public User(string email)
             {
                 Email = email;
@@ -112,6 +116,28 @@ namespace Rystem.Test.UnitTest
             Guid alfa = Guid.Parse("db429642-94e3-436d-8880-6160575978b6");
             var user = new User("@gmail.com");
             Expression<Func<User, bool>> expression = x => x.Email!.Contains(user.Email!);
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
+        [Fact]
+        public void Test7()
+        {
+            string result = "x => (x.ExpirationTime > Convert.ToDateTime(\"10/12/2021 11:13:09 AM\"))";
+            Guid alfa = Guid.Parse("db429642-94e3-436d-8880-6160575978b6");
+            var user = new User("@gmail.com");
+            DateTime start = new DateTime(2021, 10, 12, 11, 13, 9);
+            Expression<Func<User, bool>> expression = x => x.ExpirationTime > start;
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
+        [Fact]
+        public void Test8()
+        {
+            string result = "x => (x.TimeSpan > new TimeSpan(1000 as long))";
+            Guid alfa = Guid.Parse("db429642-94e3-436d-8880-6160575978b6");
+            var user = new User("@gmail.com");
+            TimeSpan start = TimeSpan.FromTicks(1000);
+            Expression<Func<User, bool>> expression = x => x.TimeSpan > start;
             var serialized = expression.Serialize();
             Assert.Equal(result, serialized);
         }

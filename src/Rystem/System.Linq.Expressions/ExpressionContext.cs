@@ -36,6 +36,10 @@
                 return $"\"{value}\"";
             else if (value is Guid)
                 return $"Guid.Parse(\"{value}\")";
+            else if(value is DateTime)
+                return $"Convert.ToDateTime(\"{value}\")";
+            else if (value is TimeSpan timeSpan)
+                return $"new TimeSpan({timeSpan.Ticks} as long)";
             else if (value is char)
                 return $"'{value}'";
             else

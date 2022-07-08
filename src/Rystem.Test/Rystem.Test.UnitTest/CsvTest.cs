@@ -12,9 +12,9 @@ namespace Rystem.Test.UnitTest
     {
         internal sealed class CsvModel
         {
-            public string X { get; set; }
+            public string? X { get; set; }
             public int Id { get; set; }
-            public string B { get; set; }
+            public string? B { get; set; }
             public Guid E { get; set; }
             public bool Sol { get; set; }
         }

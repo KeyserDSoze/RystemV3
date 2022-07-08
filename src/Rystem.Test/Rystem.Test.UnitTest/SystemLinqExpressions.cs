@@ -25,6 +25,16 @@ namespace Rystem.Test.UnitTest
             public List<string> Samules { get; set; }
             public DateTime ExpirationTime { get; set; }
             public TimeSpan TimeSpan { get; set; }
+            public InsideOf Inside { get; set; }
+        }
+        public class InsideOf
+        {
+            public string A { get; set; }
+            public InsideOfInsideOf Inside { get; set; }
+        }
+        public class InsideOfInsideOf
+        {
+            public string A { get; set; }
         }
         public class IperUser : User
         {
@@ -138,6 +148,16 @@ namespace Rystem.Test.UnitTest
             var user = new User("@gmail.com");
             TimeSpan start = TimeSpan.FromTicks(1000);
             Expression<Func<User, bool>> expression = x => x.TimeSpan > start;
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
+        [Fact]
+        public void Test9()
+        {
+            string result = "ƒ => Not(ƒ.Inside.Inside.A.Equals(\"\"))";
+            string olaf = "";
+            TimeSpan start = TimeSpan.FromTicks(1000);
+            Expression<Func<MakeIt, bool>> expression = ƒ => !ƒ.Inside.Inside.A.Equals(olaf);
             var serialized = expression.Serialize();
             Assert.Equal(result, serialized);
         }

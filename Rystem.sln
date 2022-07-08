@@ -5,35 +5,20 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{480D0F2C-02EA-48A8-9100-5DECB679579E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.WebApp", "src\Rystem.Test\Rystem.Test.WebApp\Rystem.Test.WebApp.csproj", "{5CE586E8-0573-47FB-83D5-0BE018E7CA29}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem", "src\Rystem\Rystem.csproj", "{33C6BB28-49D8-458E-8DCB-39FF916FF141}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.ConsoleApp", "src\Rystem.Test\Rystem.Test.ConsoleApp\Rystem.Test.ConsoleApp.csproj", "{91EC3697-72E2-4293-B92B-ECEF94B50615}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Concurrency", "src\Rystem.Concurrency\Rystem.Concurrency.csproj", "{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.DependencyInjectionExtensions", "src\Rystem.DependencyInjectionExtensions\Rystem.DependencyInjectionExtensions.csproj", "{B02B791D-BF83-45C1-A786-7A6D0AB3549B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.UnitTest", "src\Rystem.Test\Rystem.Test.UnitTest\Rystem.Test.UnitTest.csproj", "{62E51893-F666-4418-82BC-74E13F3D75B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Queue", "src\Rystem.Queue\Rystem.Queue.csproj", "{FEFB9037-0876-4568-8828-C3D66988533C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Concurrency.Test.UnitTest", "src\Rystem.Test\Rystem.Concurrency.Test.UnitTest\Rystem.Concurrency.Test.UnitTest.csproj", "{F00C421B-7D31-4474-AE44-063318131E97}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5DD2E4D-F4A7-4BBF-B7E4-6FE4C42F6227}"
 	ProjectSection(SolutionItems) = preProject
-		.github\workflows\PackageDeploy.Rystem.BackgroundJob.yml = .github\workflows\PackageDeploy.Rystem.BackgroundJob.yml
-		.github\workflows\PackageDeploy.Rystem.Concurrency.yml = .github\workflows\PackageDeploy.Rystem.Concurrency.yml
 		.github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml = .github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml
-		.github\workflows\PackageDeploy.Rystem.Queue.yml = .github\workflows\PackageDeploy.Rystem.Queue.yml
 		.github\workflows\PackageDeploy.Rystem.yml = .github\workflows\PackageDeploy.Rystem.yml
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.BackgroundJob", "src\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj", "{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Queue.Test.UnitTest", "src\Rystem.Test\Rystem.Queue.Test.UnitTest\Rystem.Queue.Test.UnitTest.csproj", "{601CA915-7ADE-4121-B647-7648210AB5AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +26,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5CE586E8-0573-47FB-83D5-0BE018E7CA29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CE586E8-0573-47FB-83D5-0BE018E7CA29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CE586E8-0573-47FB-83D5-0BE018E7CA29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CE586E8-0573-47FB-83D5-0BE018E7CA29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,10 +34,6 @@ Global
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EAC72B1D-898D-46AB-8446-AA6C1C55E18E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,32 +42,13 @@ Global
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FEFB9037-0876-4568-8828-C3D66988533C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEFB9037-0876-4568-8828-C3D66988533C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEFB9037-0876-4568-8828-C3D66988533C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEFB9037-0876-4568-8828-C3D66988533C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F00C421B-7D31-4474-AE44-063318131E97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F00C421B-7D31-4474-AE44-063318131E97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F00C421B-7D31-4474-AE44-063318131E97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F00C421B-7D31-4474-AE44-063318131E97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E6FE11A-09D3-4C3D-B21A-55CFBE6A2FE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{601CA915-7ADE-4121-B647-7648210AB5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{601CA915-7ADE-4121-B647-7648210AB5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{601CA915-7ADE-4121-B647-7648210AB5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{601CA915-7ADE-4121-B647-7648210AB5AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5CE586E8-0573-47FB-83D5-0BE018E7CA29} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{91EC3697-72E2-4293-B92B-ECEF94B50615} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{62E51893-F666-4418-82BC-74E13F3D75B1} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
-		{F00C421B-7D31-4474-AE44-063318131E97} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
-		{601CA915-7ADE-4121-B647-7648210AB5AA} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1123D92B-0720-49C1-90DA-0AA7FEF5EE2C}

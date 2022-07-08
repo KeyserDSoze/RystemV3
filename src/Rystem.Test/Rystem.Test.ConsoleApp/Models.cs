@@ -73,16 +73,4 @@ namespace Rystem.Test.ConsoleApp
             S = s;
         }
     }
-    public class Something : IBackgroundJob
-    {
-        public Task ActionToDoAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task OnException(Exception exception)
-        {
-            return Task.CompletedTask;
-        }
-    }
 }

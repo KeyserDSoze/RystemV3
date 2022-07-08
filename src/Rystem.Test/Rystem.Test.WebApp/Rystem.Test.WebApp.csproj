@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Rystem.BackgroundJob\Rystem.BackgroundJob.csproj" />
-    <ProjectReference Include="..\..\Rystem.Concurrency\Rystem.Concurrency.csproj" />
     <ProjectReference Include="..\..\Rystem.DependencyInjectionExtensions\Rystem.DependencyInjectionExtensions.csproj" />
     <ProjectReference Include="..\..\Rystem\Rystem.csproj" />
   </ItemGroup>

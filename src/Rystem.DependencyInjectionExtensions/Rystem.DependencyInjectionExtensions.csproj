@@ -10,7 +10,7 @@
 		<Product>Rystem</Product>
 		<Description>Rystem.</Description>
 		<Copyright>2022</Copyright>
-		<PackageIcon>rystem.png</PackageIcon>
+		<PackageIcon>rystem.dependencyinjection.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/Rystem</RepositoryUrl>
 		<PackageId>Rystem.DependencyInjectionExtensions</PackageId>
@@ -37,7 +37,7 @@
 	</Choose>
 
 	<ItemGroup>
-		<None Include="..\Rystem\rystem.png">
+		<None Include="rystem.dependencyinjection.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>

@@ -2,6 +2,12 @@
 
 Rystem is a open-source framework to improve the System in .Net
 
+### Help the project
+
+Reach out us on [Discord](https://discord.gg/wUh2fppr)
+
+### Contribute: https://www.buymeacoffee.com/keyserdsoze
+
 ## Get Started
 
 ### Rystem (core library)

@@ -12,7 +12,9 @@ namespace Rystem.Test.UnitTest
             var t = Try.WithDefaultOnCatch(() =>
              {
                  throw new Exception();
+#pragma warning disable CS0162 // Unreachable code detected
                  return 1;
+#pragma warning restore CS0162 // Unreachable code detected
              });
             Assert.Equal(0, t);
         }
@@ -31,7 +33,9 @@ namespace Rystem.Test.UnitTest
             var t = await Try.WithDefaultOnCatchAsync(() =>
             {
                 throw new Exception();
+#pragma warning disable CS0162 // Unreachable code detected
                 return Task.FromResult(1);
+#pragma warning restore CS0162 // Unreachable code detected
             });
             Assert.Equal(0, t);
         }

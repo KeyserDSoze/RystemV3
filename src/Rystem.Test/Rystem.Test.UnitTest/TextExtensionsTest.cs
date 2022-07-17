@@ -37,7 +37,9 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(3, strings.Count);
         }
         [Fact]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task Test4()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             string olfa = "dasda";
             var olfa2 = olfa.ToUpperCaseFirst();

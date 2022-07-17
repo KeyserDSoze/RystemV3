@@ -26,8 +26,9 @@ namespace Rystem.Nuget
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
-
-            Update? currentUpdateTree = UpdateConfiguration.UpdateTree;
+            Console.WriteLine("Only repository (1) or everything (something else)");
+            var line = Console.ReadLine();
+            Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : UpdateConfiguration.UpdateTree;
             while (currentUpdateTree != null)
             {
                 var context = new LibraryContext("0.0.0");
@@ -44,7 +45,7 @@ namespace Rystem.Nuget
                     Console.WriteLine($"repo to update {toUpdate}");
                     await CommitAndPushAsync(toUpdate, context.Version.V);
                 }
-                await Task.Delay(3 * 60 * 1000);
+                await Task.Delay(5 * 60 * 1000);
                 currentUpdateTree = currentUpdateTree.Son;
             }
         }

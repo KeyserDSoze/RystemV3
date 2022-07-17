@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		icons\rystem.icons.psd = icons\rystem.icons.psd
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NugetHelper", "NugetHelper", "{99AA616D-A4FF-4BA2-9795-8E8501ED9C8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rystem.NugetHelper", "src\Rystem.NugetHelper\Rystem.NugetHelper\Rystem.NugetHelper.csproj", "{AE742F30-5114-4F68-BC1C-85F004D461AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +48,10 @@ Global
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE742F30-5114-4F68-BC1C-85F004D461AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE742F30-5114-4F68-BC1C-85F004D461AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE742F30-5114-4F68-BC1C-85F004D461AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE742F30-5114-4F68-BC1C-85F004D461AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +59,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{91EC3697-72E2-4293-B92B-ECEF94B50615} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{62E51893-F666-4418-82BC-74E13F3D75B1} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
+		{AE742F30-5114-4F68-BC1C-85F004D461AC} = {99AA616D-A4FF-4BA2-9795-8E8501ED9C8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1123D92B-0720-49C1-90DA-0AA7FEF5EE2C}

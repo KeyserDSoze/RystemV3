@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.18.1" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.18" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.19" />
   </ItemGroup>
 
   <ItemGroup>

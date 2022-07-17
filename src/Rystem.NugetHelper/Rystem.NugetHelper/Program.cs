@@ -1,21 +1,28 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using CliWrap;
+using CliWrap.Buffered;
 using Rystem.NugetHelper;
 using Rystem.NugetHelper.Engine;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Management.Automation;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Rystem.Nuget
 {
     public class Program
     {
-        static Regex regexForVersion = new("<Version>[^<]*</Version>");
+        static readonly Regex regexForVersion = new("<Version>[^<]*</Version>");
         static Dictionary<string, string> newVersionOfLibraries = new();
         static VersionType Type = VersionType.Patch;
-        static Regex PackageReference = new("<PackageReference[^>]*>");
-        static Regex Include = new("Include=");
-        static Regex VersionRegex = new(@"Version=\""[^\""]*\""");
+        static readonly Regex PackageReference = new("<PackageReference[^>]*>");
+        static readonly Regex Include = new("Include=");
+        static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
+        static readonly Regex Repo = new(@"\\repos\\");
         public static async Task Main()
         {
-            string path = @$"{new Regex(@"\\repos\\").Split(Directory.GetCurrentDirectory()).First()}\repos";
+            string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
 
@@ -32,7 +39,15 @@ namespace Rystem.Nuget
                 }
                 currentUpdateTree = currentUpdateTree.Son;
                 Console.WriteLine($"Current major version is {context.Version.V}");
+                foreach (var toUpdate in context.RepoToUpdate)
+                {
+                    Console.WriteLine($"repo to update {toUpdate}");
+                    await CommitAndPushAsync(toUpdate, context.Version.V);
+                    goto label;
+                }
             }
+        label: Console.WriteLine("end");
+            Console.ReadLine();
         }
         static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update)
         {
@@ -74,6 +89,9 @@ namespace Rystem.Nuget
                             Console.WriteLine(content);
                             Console.WriteLine("------------------------");
                             Console.WriteLine("------------------------");
+                            string path = @$"{Repo.Split(file.FullName).First()}\repos\{Repo.Split(file.FullName).Last().Split('\\').First()}";
+                            if (!context.RepoToUpdate.Contains(path))
+                                context.RepoToUpdate.Add(path);
                         }
                     }
                     fileFound = true;
@@ -85,6 +103,46 @@ namespace Rystem.Nuget
                 {
                     await ReadInDeepAsync(directory, context, update);
                 }
+        }
+        static async Task CommitAndPushAsync(string path, string newVersion)
+        {
+            //using (PowerShell powershell = PowerShell.Create())
+            //{
+
+            //    powershell.AddScript($"cd {path}");
+
+            //    powershell.AddScript(@"git init");
+            //    powershell.AddScript(@"git add *");
+            //    powershell.AddScript($"git commit -m \"new version\" v.{newVersion}");
+            //    powershell.AddScript(@"git push");
+
+            //    var results = await powershell.InvokeAsync();
+            //}
+            await ExecuteCommandAsync(path, "git add .");
+            //await ExecuteCommandAsync(path, "git push");
+        }
+        static async Task ExecuteCommandAsync(string path, string command)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    RedirectStandardInput = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = path
+                },
+            };
+
+            process.Start();
+            using (var writer = process.StandardInput)
+            {
+                writer.WriteLine("git init");
+                writer.WriteLine("git add .");
+                writer.WriteLine("git commit --author=\"alessandro rapiti <alessandro.rapiti44@gmail.com>\" -m \"test\"");
+                writer.WriteLine("git push");
+            }
+            process.WaitForExit();
         }
     }
 }

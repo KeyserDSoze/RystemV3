@@ -50,6 +50,7 @@
     internal record LibraryContext
     {
         public string LibraryName { get; set; }
+        public List<string> RepoToUpdate { get; set; } = new();
         public LibraryContext(string version = "0.0.0")
         {
             Version = new(version);

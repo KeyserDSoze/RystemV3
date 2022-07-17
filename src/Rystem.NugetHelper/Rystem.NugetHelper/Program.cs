@@ -59,8 +59,9 @@ namespace Rystem.Nuget
                     var library = update.Libraries.First(x => $"{x.LibraryName}.csproj" == file.Name);
                     if (!newVersionOfLibraries.ContainsKey(library.LibraryName))
                     {
-                        using var streamReader = new StreamReader(file.OpenRead());
+                        var streamReader = new StreamReader(file.OpenRead());
                         string content = await streamReader.ReadToEndAsync();
+                        streamReader.Dispose();
                         if (regexForVersion.IsMatch(content))
                         {
                             var currentVersion = regexForVersion.Match(content).Value;
@@ -92,6 +93,7 @@ namespace Rystem.Nuget
                             string path = @$"{Repo.Split(file.FullName).First()}\repos\{Repo.Split(file.FullName).Last().Split('\\').First()}";
                             if (!context.RepoToUpdate.Contains(path))
                                 context.RepoToUpdate.Add(path);
+                            await File.WriteAllTextAsync(file.FullName, content);
                         }
                     }
                     fileFound = true;

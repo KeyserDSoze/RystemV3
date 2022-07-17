@@ -36,48 +36,55 @@ namespace Rystem.Nuget
         }
         static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update)
         {
+            bool fileFound = false;
             foreach (var file in directoryInfo!.GetFiles())
             {
                 if (file.Name.EndsWith(".csproj") && update.Libraries.Any(x => $"{x.LibraryName}.csproj" == file.Name))
                 {
                     var library = update.Libraries.First(x => $"{x.LibraryName}.csproj" == file.Name);
-                    using var streamReader = new StreamReader(file.OpenRead());
-                    string content = await streamReader.ReadToEndAsync();
-                    if (regexForVersion.IsMatch(content))
+                    if (!newVersionOfLibraries.ContainsKey(library.LibraryName))
                     {
-                        var currentVersion = regexForVersion.Match(content).Value;
-                        var version = new NugetHelper.Version(regexForVersion.Match(content).Value.Split('>').Skip(1).First().Split('<').First());
-                        version.NextVersion(Type);
-                        Console.WriteLine($"{file.Name} from {currentVersion} to {version.V}");
-                        content = content.Replace(currentVersion, $"<Version>{version.V}</Version>");
-                        newVersionOfLibraries.Add(library.LibraryName, version.V);
-                        foreach (var reference in PackageReference.Matches(content).Select(x => x.Value))
+                        using var streamReader = new StreamReader(file.OpenRead());
+                        string content = await streamReader.ReadToEndAsync();
+                        if (regexForVersion.IsMatch(content))
                         {
-                            var include = Include.Split(reference).Skip(1).First().Trim('"').Split('"').First();
-                            if (newVersionOfLibraries.ContainsKey(include))
+                            var currentVersion = regexForVersion.Match(content).Value;
+                            var version = new NugetHelper.Version(regexForVersion.Match(content).Value.Split('>').Skip(1).First().Split('<').First());
+                            version.NextVersion(Type);
+                            Console.WriteLine($"{file.Name} from {currentVersion} to {version.V}");
+                            content = content.Replace(currentVersion, $"<Version>{version.V}</Version>");
+                            newVersionOfLibraries.Add(library.LibraryName, version.V);
+                            foreach (var reference in PackageReference.Matches(content).Select(x => x.Value))
                             {
-                                if (VersionRegex.IsMatch(reference))
+                                var include = Include.Split(reference).Skip(1).First().Trim('"').Split('"').First();
+                                if (newVersionOfLibraries.ContainsKey(include))
                                 {
-                                    var newReference = reference.Replace(VersionRegex.Match(reference).Value, $"Version=\"{newVersionOfLibraries[include]}\"");
-                                    content = content.Replace(reference, newReference);
+                                    if (VersionRegex.IsMatch(reference))
+                                    {
+                                        var newReference = reference.Replace(VersionRegex.Match(reference).Value, $"Version=\"{newVersionOfLibraries[include]}\"");
+                                        content = content.Replace(reference, newReference);
+                                    }
                                 }
                             }
+                            if (context.Version.IsGreater(version))
+                                context.Version = version;
+                            Console.WriteLine($"{file.FullName} replaced with");
+                            Console.WriteLine("------------------------");
+                            Console.WriteLine("------------------------");
+                            Console.WriteLine(content);
+                            Console.WriteLine("------------------------");
+                            Console.WriteLine("------------------------");
                         }
-                        if (context.Version.IsGreater(version))
-                            context.Version = version;
-                        Console.WriteLine("Replaced with");
-                        Console.WriteLine("------------------------");
-                        Console.WriteLine("------------------------");
-                        Console.WriteLine(content);
-                        Console.WriteLine("------------------------");
-                        Console.WriteLine("------------------------");
                     }
+                    fileFound = true;
+                    break;
                 }
             }
-            foreach (var directory in directoryInfo.GetDirectories().Where(x => x.Name != "bin" && x.Name != "obj"))
-            {
-                await ReadInDeepAsync(directory, context, update);
-            }
+            if (!fileFound)
+                foreach (var directory in directoryInfo.GetDirectories().Where(x => x.Name != "bin" && x.Name != "obj"))
+                {
+                    await ReadInDeepAsync(directory, context, update);
+                }
         }
     }
 }

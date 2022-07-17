@@ -8,11 +8,11 @@
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Rystem</Product>
-		<Description>Rystem.</Description>
+		<Description>Rystem.DependencyInjection is based on the open-source framework Rystem to improve the Dependency Injection in .Net</Description>
 		<Copyright>2022</Copyright>
 		<PackageIcon>rystem.dependencyinjection.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/KeyserDSoze/Rystem</RepositoryUrl>
+		<RepositoryUrl>https://github.com/KeyserDSoze/RystemV3/tree/master/src/Rystem.DependencyInjectionExtensions</RepositoryUrl>
 		<PackageId>Rystem.DependencyInjectionExtensions</PackageId>
 		<Version>1.0.2</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>

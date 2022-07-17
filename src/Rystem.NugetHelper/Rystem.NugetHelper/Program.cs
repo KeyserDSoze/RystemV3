@@ -37,17 +37,15 @@ namespace Rystem.Nuget
                         await ReadInDeepAsync(rystemDirectory, context, currentUpdateTree);
                     }
                 }
-                currentUpdateTree = currentUpdateTree.Son;
                 Console.WriteLine($"Current major version is {context.Version.V}");
                 foreach (var toUpdate in context.RepoToUpdate)
                 {
                     Console.WriteLine($"repo to update {toUpdate}");
                     await CommitAndPushAsync(toUpdate, context.Version.V);
-                    goto label;
                 }
+                await Task.Delay(5 * 60 * 1000);
+                currentUpdateTree = currentUpdateTree.Son;
             }
-        label: Console.WriteLine("end");
-            Console.ReadLine();
         }
         static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update)
         {

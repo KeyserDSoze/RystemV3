@@ -20,6 +20,7 @@ namespace Rystem.Nuget
         static readonly Regex Include = new("Include=");
         static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
         static readonly Regex Repo = new(@"\\repos\\");
+        const int AddingValueForVersion = 1;
         public static async Task Main()
         {
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
@@ -43,7 +44,7 @@ namespace Rystem.Nuget
                     Console.WriteLine($"repo to update {toUpdate}");
                     await CommitAndPushAsync(toUpdate, context.Version.V);
                 }
-                await Task.Delay(5 * 60 * 1000);
+                await Task.Delay(3 * 60 * 1000);
                 currentUpdateTree = currentUpdateTree.Son;
             }
         }
@@ -52,9 +53,9 @@ namespace Rystem.Nuget
             bool fileFound = false;
             foreach (var file in directoryInfo!.GetFiles())
             {
-                if (file.Name.EndsWith(".csproj") && update.Libraries.Any(x => $"{x.LibraryName}.csproj" == file.Name))
+                if (file.Name.EndsWith(".csproj") && update.Libraries.Any(x => $"{x.NormalizedName}.csproj" == file.Name))
                 {
-                    var library = update.Libraries.First(x => $"{x.LibraryName}.csproj" == file.Name);
+                    var library = update.Libraries.First(x => $"{x.NormalizedName}.csproj" == file.Name);
                     if (!newVersionOfLibraries.ContainsKey(library.LibraryName))
                     {
                         var streamReader = new StreamReader(file.OpenRead());
@@ -64,7 +65,7 @@ namespace Rystem.Nuget
                         {
                             var currentVersion = regexForVersion.Match(content).Value;
                             var version = new NugetHelper.Version(regexForVersion.Match(content).Value.Split('>').Skip(1).First().Split('<').First());
-                            version.NextVersion(Type);
+                            version.NextVersion(Type, AddingValueForVersion);
                             Console.WriteLine($"{file.Name} from {currentVersion} to {version.V}");
                             content = content.Replace(currentVersion, $"<Version>{version.V}</Version>");
                             newVersionOfLibraries.Add(library.LibraryName, version.V);

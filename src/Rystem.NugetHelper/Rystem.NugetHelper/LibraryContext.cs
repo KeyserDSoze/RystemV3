@@ -31,18 +31,18 @@
             }
             return false;
         }
-        public void NextVersion(VersionType type)
+        public void NextVersion(VersionType type, int addingValue)
         {
             switch (type)
             {
                 case VersionType.Major:
-                    V = $"{Major + 1}.0.0";
+                    V = $"{Major + addingValue}.0.0";
                     break;
                 case VersionType.Minor:
-                    V = $"{Major}.{Minor + 1}.0";
+                    V = $"{Major}.{Minor + addingValue}.0";
                     break;
                 case VersionType.Patch:
-                    V = $"{Major}.{Minor}.{Patch + 1}";
+                    V = $"{Major}.{Minor}.{Patch + addingValue}";
                     break;
             }
         }
@@ -50,6 +50,7 @@
     internal record LibraryContext
     {
         public string LibraryName { get; set; }
+        public string NormalizedName => LibraryName.Replace("Rystem.RepositoryFramework.", "RepositoryFramework.");
         public List<string> RepoToUpdate { get; set; } = new();
         public LibraryContext(string version = "0.0.0")
         {

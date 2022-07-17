@@ -106,23 +106,6 @@ namespace Rystem.Nuget
         }
         static async Task CommitAndPushAsync(string path, string newVersion)
         {
-            //using (PowerShell powershell = PowerShell.Create())
-            //{
-
-            //    powershell.AddScript($"cd {path}");
-
-            //    powershell.AddScript(@"git init");
-            //    powershell.AddScript(@"git add *");
-            //    powershell.AddScript($"git commit -m \"new version\" v.{newVersion}");
-            //    powershell.AddScript(@"git push");
-
-            //    var results = await powershell.InvokeAsync();
-            //}
-            await ExecuteCommandAsync(path, "git add .");
-            //await ExecuteCommandAsync(path, "git push");
-        }
-        static async Task ExecuteCommandAsync(string path, string command)
-        {
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -139,10 +122,10 @@ namespace Rystem.Nuget
             {
                 writer.WriteLine("git init");
                 writer.WriteLine("git add .");
-                writer.WriteLine("git commit --author=\"alessandro rapiti <alessandro.rapiti44@gmail.com>\" -m \"test\"");
+                writer.WriteLine($"git commit --author=\"alessandro rapiti <alessandro.rapiti44@gmail.com>\" -m \"new version v.{newVersion}\"");
                 writer.WriteLine("git push");
             }
-            process.WaitForExit();
+            await process.WaitForExitAsync();
         }
     }
 }

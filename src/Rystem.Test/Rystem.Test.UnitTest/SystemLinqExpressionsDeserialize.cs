@@ -19,6 +19,7 @@ namespace Rystem.Test.UnitTest
         [InlineData("ƒ => (ƒ.ExpirationTime > Convert.ToDateTime(\"7/6/2022 9:48:56 AM\"))", 5)]
         [InlineData("ƒ => (ƒ.TimeSpan > new TimeSpan(1000 as long))", 5)]
         [InlineData("ƒ => Not(ƒ.Inside.Inside.A.Equals(\"dasdad\"))", 0)]
+        [InlineData("ƒ => Not(String.IsNullOrWhiteSpace(ƒ.Inside.Inside.A))", 5)]
         public void Test(string expressionAsString, int count)
         {
             var newExpression = expressionAsString.Deserialize<MakeIt, bool>();

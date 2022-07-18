@@ -1,12 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using CliWrap;
-using CliWrap.Buffered;
 using Rystem.NugetHelper;
 using Rystem.NugetHelper.Engine;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Management.Automation;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Rystem.Nuget
@@ -26,9 +21,10 @@ namespace Rystem.Nuget
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
-            Console.WriteLine("Only repository (1) or everything (something else)");
+            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not.");
             var line = Console.ReadLine();
             Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : UpdateConfiguration.UpdateTree;
+            bool checkIfGoAhead = line == "2";
             while (currentUpdateTree != null)
             {
                 var context = new LibraryContext("0.0.0");
@@ -44,6 +40,14 @@ namespace Rystem.Nuget
                 {
                     Console.WriteLine($"repo to update {toUpdate}");
                     await CommitAndPushAsync(toUpdate, context.Version.V);
+                }
+                if (checkIfGoAhead)
+                {
+                    Console.WriteLine("Do you want to go ahead with next step of publish? (0) not ok, (other) ok");
+                    if (Console.ReadLine() == "0")
+                    {
+                        break;
+                    }
                 }
                 await Task.Delay(5 * 60 * 1000);
                 currentUpdateTree = currentUpdateTree.Son;

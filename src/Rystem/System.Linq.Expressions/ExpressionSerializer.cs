@@ -1,4 +1,6 @@
 ﻿using System.Linq.Dynamic.Core;
+using System.Reflection;
+using System.Linq;
 
 namespace System.Linq.Expressions
 {
@@ -19,7 +21,7 @@ namespace System.Linq.Expressions
         {
             ExpressionContext context = new(expression);
             Serialize(context, new ExpressionBearer(expression));
-            return context.ExpressionAsString;
+            return context.Finalize();
         }
         public static Expression<Func<T, TResult>> Deserialize<T, TResult>(string expressionAsString)
             => DynamicExpressionParser.ParseLambda<T, TResult>(ParsingConfig.Default, false, expressionAsString);

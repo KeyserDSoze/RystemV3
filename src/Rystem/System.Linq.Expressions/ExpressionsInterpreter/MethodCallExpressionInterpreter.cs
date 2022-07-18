@@ -1,4 +1,7 @@
-﻿namespace System.Linq.Expressions
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+
+namespace System.Linq.Expressions
 {
     internal sealed class MethodCallExpressionInterpreter : IExpressionInterpreter
     {
@@ -9,11 +12,19 @@
             List<ExpressionBearer> expressions = new();
             if (bearer.Expression is MethodCallExpression methodCallExpression)
             {
+                if (methodCallExpression.Method.Attributes.HasFlag(MethodAttributes.Static)
+                    && methodCallExpression.Method.DeclaringType != null
+                    && !methodCallExpression.Method.IsDefined(typeof(ExtensionAttribute), true))
+                {
+                    var key = $"{methodCallExpression.Method.DeclaringType.Name}.{methodCallExpression.Method.Name}";
+                    if (!context.FinalSubstitutions.ContainsKey(key))
+                        context.FinalSubstitutions.Add(key, methodCallExpression.Method.Name);
+                }
                 if (methodCallExpression.Arguments.Count > 0)
                     foreach (var argument in methodCallExpression.Arguments)
                     {
-                        if (argument is Expression)
-                            expressions.Add(new(argument));
+                        if (argument is Expression expression)
+                            expressions.Add(new(expression));
                         else
                             context.CompileAndReplace(argument);
                     }

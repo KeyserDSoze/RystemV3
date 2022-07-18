@@ -155,5 +155,13 @@ namespace Rystem.Test.UnitTest
             var serialized = expression.Serialize();
             Assert.Equal(result, serialized);
         }
+        [Fact]
+        public void Test10()
+        {
+            string result = "ƒ => Not(String.IsNullOrWhiteSpace(ƒ.Inside.Inside.A))";
+            Expression<Func<MakeIt, bool>> expression = ƒ => !String.IsNullOrWhiteSpace(ƒ!.Inside!.Inside!.A);
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
     }
 }

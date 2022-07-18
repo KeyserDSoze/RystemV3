@@ -5,6 +5,8 @@
         private static readonly Dictionary<string, PropertyInfo[]> AllProperties = new();
         private static readonly Dictionary<string, ConstructorInfo[]> AllConstructors = new();
         private static readonly Dictionary<string, FieldInfo[]> AllFields = new();
+        private static readonly Dictionary<string, MethodInfo[]> AllMethods = new();
+        private static readonly Dictionary<string, MethodInfo[]> AllStaticMethods = new();
         private static readonly object Semaphore = new();
         public static PropertyInfo[] FetchProperties(this Type type, params Type[] attributesToIgnore)
         {
@@ -29,13 +31,29 @@
                         AllConstructors.Add(type.FullName!, type.GetConstructors());
             return AllConstructors[type.FullName!];
         }
-        public static ConstructorInfo[] FetchFields(this Type type)
+        public static FieldInfo[] FetchFields(this Type type)
         {
-            if (!AllConstructors.ContainsKey(type.FullName!))
+            if (!AllFields.ContainsKey(type.FullName!))
                 lock (Semaphore)
-                    if (!AllConstructors.ContainsKey(type.FullName!))
+                    if (!AllFields.ContainsKey(type.FullName!))
                         AllFields.Add(type.FullName!, type.GetFields());
-            return AllConstructors[type.FullName!];
+            return AllFields[type.FullName!];
+        }
+        public static MethodInfo[] FetchMethods(this Type type)
+        {
+            if (!AllMethods.ContainsKey(type.FullName!))
+                lock (Semaphore)
+                    if (!AllMethods.ContainsKey(type.FullName!))
+                        AllMethods.Add(type.FullName!, type.GetMethods());
+            return AllMethods[type.FullName!];
+        }
+        public static MethodInfo[] FetchStaticMethods(this Type type)
+        {
+            if (!AllStaticMethods.ContainsKey(type.FullName!))
+                lock (Semaphore)
+                    if (!AllStaticMethods.ContainsKey(type.FullName!))
+                        AllStaticMethods.Add(type.FullName!, type.GetMethods(BindingFlags.Public | BindingFlags.Static));
+            return AllStaticMethods[type.FullName!];
         }
     }
 }

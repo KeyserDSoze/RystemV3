@@ -49,7 +49,8 @@ namespace Rystem.Nuget
                         break;
                     }
                 }
-                await Task.Delay(5 * 60 * 1000);
+                if (currentUpdateTree.Son != null)
+                    await Task.Delay(5 * 60 * 1000);
                 currentUpdateTree = currentUpdateTree.Son;
             }
         }

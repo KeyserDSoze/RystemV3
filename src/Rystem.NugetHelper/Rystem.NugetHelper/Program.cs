@@ -6,11 +6,12 @@ using System.Text.RegularExpressions;
 
 namespace Rystem.Nuget
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Test purpose.")]
     public class Program
     {
         static readonly Regex regexForVersion = new("<Version>[^<]*</Version>");
-        static Dictionary<string, string> newVersionOfLibraries = new();
-        static VersionType Type = VersionType.Patch;
+        static readonly Dictionary<string, string> newVersionOfLibraries = new();
+        static readonly VersionType Type = VersionType.Patch;
         static readonly Regex PackageReference = new("<PackageReference[^>]*>");
         static readonly Regex Include = new("Include=");
         static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
@@ -78,13 +79,10 @@ namespace Rystem.Nuget
                             foreach (var reference in PackageReference.Matches(content).Select(x => x.Value))
                             {
                                 var include = Include.Split(reference).Skip(1).First().Trim('"').Split('"').First();
-                                if (newVersionOfLibraries.ContainsKey(include))
+                                if (newVersionOfLibraries.ContainsKey(include) && VersionRegex.IsMatch(reference))
                                 {
-                                    if (VersionRegex.IsMatch(reference))
-                                    {
-                                        var newReference = reference.Replace(VersionRegex.Match(reference).Value, $"Version=\"{newVersionOfLibraries[include]}\"");
-                                        content = content.Replace(reference, newReference);
-                                    }
+                                    var newReference = reference.Replace(VersionRegex.Match(reference).Value, $"Version=\"{newVersionOfLibraries[include]}\"");
+                                    content = content.Replace(reference, newReference);
                                 }
                             }
                             if (context.Version.IsGreater(version))

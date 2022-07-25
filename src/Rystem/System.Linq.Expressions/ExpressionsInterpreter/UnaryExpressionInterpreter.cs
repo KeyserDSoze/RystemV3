@@ -9,7 +9,7 @@
             var expressions = new List<ExpressionBearer>();
             if (bearer.Expression is UnaryExpression unaryExpression)
             {
-                if (unaryExpression.Operand != null && unaryExpression.Operand is MemberExpression memberExpression)
+                if (unaryExpression.Operand is MemberExpression memberExpression)
                 {
                     var memberExpressionAsString = memberExpression.ToString();
                     string name = memberExpressionAsString.Split('.').First();

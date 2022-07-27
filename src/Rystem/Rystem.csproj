@@ -4,6 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<DebugType>embedded</DebugType>
 		<Authors>Alessandro Rapiti</Authors>
 		<Company>Alessandro Rapiti</Company>
 		<Product>Rystem</Product>
@@ -13,7 +14,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/KeyserDSoze/RystemV3</RepositoryUrl>
 		<PackageId>Rystem</PackageId>
-		<Version>4.0.25</Version>
+		<Version>4.0.26</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>

@@ -14,7 +14,7 @@ namespace Rystem.Test.UnitTest
             Yes,
             Wrong
         }
-        internal sealed class MakeIt
+        internal sealed record MakeIt
         {
             public string? X { get; set; }
             public int Id { get; set; }
@@ -159,7 +159,15 @@ namespace Rystem.Test.UnitTest
         public void Test10()
         {
             string result = "ƒ => Not(String.IsNullOrWhiteSpace(ƒ.Inside.Inside.A))";
-            Expression<Func<MakeIt, bool>> expression = ƒ => !String.IsNullOrWhiteSpace(ƒ!.Inside!.Inside!.A);
+            Expression<Func<MakeIt, bool>> expression = ƒ => !string.IsNullOrWhiteSpace(ƒ!.Inside!.Inside!.A);
+            var serialized = expression.Serialize();
+            Assert.Equal(result, serialized);
+        }
+        [Fact]
+        public void Test11()
+        {
+            string result = "Param_0 => Param_0.Id";
+            Expression<Func<MakeIt, object>> expression = "ƒ => ƒ.Id".Deserialize<MakeIt, object>();
             var serialized = expression.Serialize();
             Assert.Equal(result, serialized);
         }

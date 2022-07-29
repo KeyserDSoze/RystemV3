@@ -47,5 +47,34 @@ namespace Rystem.Test.UnitTest
             var x = makes.Where(newExpression.Compile()).ToList();
             Assert.Equal(count, x.Count);
         }
+        [Theory]
+        [InlineData("ƒ => ƒ.Id", 36)]
+        public void OrderBy(string expressionAsString, int value)
+        {
+            var newExpression = expressionAsString.Deserialize<MakeIt, object>();
+            MakeIt makeIt = new()
+            {
+                B = "",
+                Id = 32,
+                E = Guid.Parse("bf46510b-b7e6-4ba2-88da-cef208aa81f2"),
+                X = "dasda",
+                Sol = true,
+                Type = MakeType.Wrong,
+                Samules = new() { "a", "b", "ccccde" },
+                ExpirationTime = DateTime.Now.AddYears(24),
+                TimeSpan = TimeSpan.FromTicks(100_000),
+                Inside = new InsideOf() { Inside = new InsideOfInsideOf { A = "dasdad" } }
+            };
+            List<MakeIt> makes = new()
+            {
+                makeIt,
+                makeIt with { Id = 33},
+                makeIt with { Id = 34 },
+                makeIt with { Id = 35 },
+                makeIt with { Id = 36 },
+            };
+            var x = makes.OrderByDescending(newExpression.Compile()).ToList();
+            Assert.Equal(value, x.First().Id);
+        }
     }
 }

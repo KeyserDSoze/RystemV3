@@ -21,19 +21,19 @@ namespace Rystem.Test.UnitTest
             Assert.True(a.IsPrimitive());
             bool? b = null;
             Assert.True(b.IsPrimitive());
-            string c = null;
+            string c = null!;
             Assert.True(c.IsPrimitive());
             string d = "dasdsad";
             Assert.True(d.IsPrimitive());
             int? e = 32;
             Assert.True(e.IsPrimitive());
-            Range range = new Range(2, 3);
+            Range range = new(2, 3);
             Assert.False(range.IsPrimitive());
             Zalo zalo = new();
             Assert.False(zalo.IsPrimitive());
             Sulo sulo = new();
             Assert.False(sulo.IsPrimitive());
-            object k = new object();
+            object k = new();
             Assert.False(k.IsPrimitive());
 
         }

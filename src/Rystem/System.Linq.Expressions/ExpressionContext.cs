@@ -29,11 +29,7 @@ namespace System.Linq.Expressions
                 var value = Expression.Lambda(argument).Compile().DynamicInvoke();
                 ReplaceWithValue(argumentKey, value);
             }
-            catch 
-            {
-                var argumentKey = argument.ToString();
-                //ReplaceWithValue(argumentKey, );
-            }
+            catch { }
         }
         public string Finalize()
         {

@@ -13,7 +13,7 @@
             if (!AllProperties.ContainsKey(type.FullName!))
                 lock (Semaphore)
                     if (!AllProperties.ContainsKey(type.FullName!))
-                        AllProperties.Add(type.FullName!, type.GetProperties()
+                        AllProperties.Add(type.FullName!, type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
                             .Where(x =>
                             {
                                 foreach (Type attributeToIgnore in attributesToIgnore)

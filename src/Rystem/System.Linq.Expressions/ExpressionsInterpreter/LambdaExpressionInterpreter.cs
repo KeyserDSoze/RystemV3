@@ -11,7 +11,7 @@
                 context.Arguments.AddRange(lambdaExpression.Parameters.Select(x => new ArgumentValue(x.ToString(), x.Type)));
                 return new List<ExpressionBearer>() { new ExpressionBearer(lambdaExpression.Body) };
             }
-            return null;
+            return null!;
         }
     }
 }

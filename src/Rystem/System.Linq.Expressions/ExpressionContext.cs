@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Reflection;
 
 namespace System.Linq.Expressions
 {
@@ -20,16 +21,15 @@ namespace System.Linq.Expressions
             ExpressionAsString = ExpressionAsString.Replace(key, value, 1);
         }
         public bool IsAnArgument(string name, Type? type)
-            => type != null && Arguments.Any(x => x.Name == name && x.Type == type);
+            => type != null && Arguments.Any(x => x.Name == name && x.Type.IsTheSameTypeOrAParent(type));
         public void CompileAndReplace(Expression argument)
         {
-            try
+            Try.WithDefaultOnCatch(() =>
             {
                 var argumentKey = argument.ToString();
                 var value = Expression.Lambda(argument).Compile().DynamicInvoke();
                 ReplaceWithValue(argumentKey, value);
-            }
-            catch { }
+            });
         }
         public string Finalize()
         {

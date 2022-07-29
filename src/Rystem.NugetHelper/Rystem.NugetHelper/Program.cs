@@ -63,7 +63,7 @@ namespace Rystem.Nuget
                 if (file.Name.EndsWith(".csproj") && update.Libraries.Any(x => $"{x.NormalizedName}.csproj" == file.Name))
                 {
                     var library = update.Libraries.First(x => $"{x.NormalizedName}.csproj" == file.Name);
-                    if (!newVersionOfLibraries.ContainsKey(library.LibraryName))
+                    if (!newVersionOfLibraries.ContainsKey(library.LibraryName!))
                     {
                         var streamReader = new StreamReader(file.OpenRead());
                         string content = await streamReader.ReadToEndAsync();
@@ -75,7 +75,7 @@ namespace Rystem.Nuget
                             version.NextVersion(Type, AddingValueForVersion);
                             Console.WriteLine($"{file.Name} from {currentVersion} to {version.V}");
                             content = content.Replace(currentVersion, $"<Version>{version.V}</Version>");
-                            newVersionOfLibraries.Add(library.LibraryName, version.V);
+                            newVersionOfLibraries.Add(library.LibraryName!, version.V);
                             foreach (var reference in PackageReference.Matches(content).Select(x => x.Value))
                             {
                                 var include = Include.Split(reference).Skip(1).First().Trim('"').Split('"').First();

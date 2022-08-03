@@ -25,12 +25,14 @@ namespace System.Linq.Expressions
             => DynamicExpressionParser.ParseLambda<T, TResult>(ParsingConfig.Default, false, expressionAsString);
         public static Expression<Func<TResult>> Deserialize<TResult>(string expressionAsString)
             => DynamicExpressionParser.ParseLambda<TResult>(ParsingConfig.Default, false, expressionAsString);
-        public static LambdaExpression DeserializeAsDynamic<T>(string expressionAsString)
+        public static LambdaExpression DeserializeAsDynamic<T>(string expressionAsString) 
+            => DeserializeAsDynamicAndRetrieveType<T>(expressionAsString).Expression;
+        public static (LambdaExpression Expression, Type Type) DeserializeAsDynamicAndRetrieveType<T>(string expressionAsString)
         {
             var lambda = DynamicExpressionParser.ParseLambda<T, object>(ParsingConfig.Default, false, expressionAsString);
             if (lambda.Body is UnaryExpression unary)
-                return DynamicExpressionParser.ParseLambda(ParsingConfig.Default, typeof(T), unary.Operand.Type, expressionAsString);
-            return lambda;
+                return (DynamicExpressionParser.ParseLambda(ParsingConfig.Default, typeof(T), unary.Operand.Type, expressionAsString), unary.Operand.Type);
+            return (lambda, lambda.ReturnType);
         }
         private static void Serialize(ExpressionContext context, ExpressionBearer bearer)
         {

@@ -16,5 +16,7 @@
             => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString);
         public static Delegate DeserializeAndCompileAsDynamic<T>(this string expressionAsString)
             => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString).Compile();
+        public static (LambdaExpression Expression, Type Type) DeserializeAsDynamicAndRetrieveType<T>(this string expressionAsString)
+            => ExpressionSerializer.DeserializeAsDynamicAndRetrieveType<T>(expressionAsString);
     }
 }

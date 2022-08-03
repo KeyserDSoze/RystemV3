@@ -12,5 +12,9 @@
             => ExpressionSerializer.Deserialize<T, TResult>(expressionAsString).Compile();
         public static Func<TResult> DeserializeAndCompile<TResult>(this string expressionAsString)
             => ExpressionSerializer.Deserialize<TResult>(expressionAsString).Compile();
+        public static LambdaExpression DeserializeAsDynamic<T>(this string expressionAsString)
+            => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString);
+        public static Delegate DeserializeAndCompileAsDynamic<T>(this string expressionAsString)
+            => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString).Compile();
     }
 }

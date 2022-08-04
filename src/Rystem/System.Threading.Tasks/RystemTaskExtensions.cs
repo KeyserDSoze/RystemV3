@@ -12,10 +12,13 @@ namespace System.Threading.Tasks
           => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
         public static ConfiguredValueTaskAwaitable<T> NoContext<T>(this ValueTask<T> task)
             => task.ConfigureAwait(RystemTask.WaitYourStartingThread);
-        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> items)
+        public static Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> items)
+            => items.ToListAsync(CancellationToken.None);
+        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> items,
+            CancellationToken cancellationToken)
         {
             List<T> entities = new();
-            await foreach (var item in items)
+            await foreach (var item in items.WithCancellation(cancellationToken))
                 entities.Add(item);
             return entities;
         }

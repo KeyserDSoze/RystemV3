@@ -38,7 +38,8 @@ namespace Rystem.Test.ConsoleApp
         public string G { get; }
         public string H { get; }
         public string S { get; }
-        public AUser(string a, string b, string c, string d, string e, string f, string g)
+
+        protected AUser(string a, string b, string c, string d, string e, string f, string g)
         {
             Name = a;
             Id = b;
@@ -47,8 +48,11 @@ namespace Rystem.Test.ConsoleApp
             E = e;
             F = f;
             G = g;
+            H = null!;
+            S = null!;
+            Alof = null!;
         }
-        public AUser(string a, string b, string c, string d, string e, string f, string g, string h)
+        protected AUser(string a, string b, string c, string d, string e, string f, string g, string h)
         {
             Name = a;
             Id = b;
@@ -58,8 +62,11 @@ namespace Rystem.Test.ConsoleApp
             F = f;
             G = g;
             H = h;
+            H = null!;
+            S = null!;
+            Alof = null!;
         }
-        public AUser(string a, string b, string c, string d, string e, string f, string g, string h, string s)
+        protected AUser(string a, string b, string c, string d, string e, string f, string g, string h, string s)
         {
             Name = a;
             Id = b;
@@ -70,6 +77,7 @@ namespace Rystem.Test.ConsoleApp
             G = g;
             H = h;
             S = s;
+            Alof = null!;
         }
     }
 }

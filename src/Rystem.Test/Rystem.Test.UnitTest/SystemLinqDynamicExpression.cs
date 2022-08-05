@@ -98,10 +98,28 @@ namespace Rystem.Test.UnitTest
             Assert.True(true);
         }
         [Fact]
-        public void Conversion()
+        public void Transformation()
         {
             Expression<Func<User, int>> expression = x => x.Id;
-            var result = expression.Convert<User, int, decimal>(new User { Id = 13 });
+            var result = expression.Transform<User, int, decimal>(new User { Id = 13 });
+            Assert.Equal(typeof(decimal), result.GetType());
+            Assert.Equal(13M, result);
+        }
+        [Fact]
+        public void Transformation2()
+        {
+            Expression<Func<User, int>> expression = x => x.Id;
+            LambdaExpression lambda = expression;
+            var result = lambda.Transform<decimal>(new User { Id = 13 });
+            Assert.Equal(typeof(decimal), result.GetType());
+            Assert.Equal(13M, result);
+        }
+        [Fact]
+        public async Task Transformation3()
+        {
+            Expression<Func<User, Task<int>>> expression = x => GetUserIdAsync(x);
+            LambdaExpression lambda = expression;
+            var result = await lambda.TransformAsync<decimal>(new User { Id = 13 });
             Assert.Equal(typeof(decimal), result.GetType());
             Assert.Equal(13M, result);
         }

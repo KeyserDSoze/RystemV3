@@ -58,9 +58,25 @@ namespace System.Linq.Expressions
         }
         public static ValueTask<T?> InvokeAsync<T>(this LambdaExpression lambdaExpression, params object[] args)
             => lambdaExpression.Compile().InvokeAsync<T>(args);
-        public static TResult? Convert<T, TSource, TResult>(this Expression<Func<T, TSource>> expression, T entity)
+        public static TResult? Transform<T, TSource, TResult>(this Expression<Func<T, TSource>> expression, T entity)
         {
-            var value = System.Convert.ChangeType(expression.Compile().Invoke(entity), typeof(TResult));
+            var value = Convert.ChangeType(expression.Compile().Invoke(entity), typeof(TResult));
+            if (value == null)
+                return default;
+            return (TResult)value;
+        }
+        public static TResult? Transform<TResult>(this LambdaExpression expression, params object[] args)
+        {
+            var value = Convert.ChangeType(expression.Compile().DynamicInvoke(args), typeof(TResult));
+            if (value == null)
+                return default;
+            return (TResult)value;
+        }
+        public static async ValueTask<TResult?> TransformAsync<TResult>(this LambdaExpression expression, params object[] args)
+        {
+            if (expression.ReturnType.GenericTypeArguments.Length != 1)
+                return expression.Transform<TResult>(args);
+            var value = Convert.ChangeType(await expression.InvokeAsync(expression.ReturnType.GenericTypeArguments.First(), args), typeof(TResult));
             if (value == null)
                 return default;
             return (TResult)value;

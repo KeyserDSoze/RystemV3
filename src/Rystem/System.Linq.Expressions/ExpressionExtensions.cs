@@ -56,7 +56,14 @@ namespace System.Linq.Expressions
             else
                 return default;
         }
-        public static ValueTask<T?> InvokeAsync<T>(this LambdaExpression lambdaExpression, params object[] args) 
+        public static ValueTask<T?> InvokeAsync<T>(this LambdaExpression lambdaExpression, params object[] args)
             => lambdaExpression.Compile().InvokeAsync<T>(args);
+        public static TResult? Convert<T, TSource, TResult>(this Expression<Func<T, TSource>> expression, T entity)
+        {
+            var value = System.Convert.ChangeType(expression.Compile().Invoke(entity), typeof(TResult));
+            if (value == null)
+                return default;
+            return (TResult)value;
+        }
     }
 }

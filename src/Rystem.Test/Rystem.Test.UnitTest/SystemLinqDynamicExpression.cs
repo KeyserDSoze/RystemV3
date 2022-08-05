@@ -12,31 +12,34 @@ namespace Rystem.Test.UnitTest
             public int Id { get; set; }
             public decimal Price { get; set; }
         }
-        private async Task<int> GetUserIdAsync(User user)
+        private static async Task<int> GetUserIdAsync(User user)
         {
             await Task.Delay(1000);
             return user.Id;
         }
-        private async Task<decimal> GetUserPriceAsync(User user)
+        private static async Task<decimal> GetUserPriceAsync(User user)
         {
             await Task.Delay(1000);
             return user.Price;
         }
-        private async ValueTask<int> GetUserId2Async(User user)
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Test purpose.")]
+        private static async ValueTask<int> GetUserId2Async(User user)
         {
             await Task.Delay(1000);
             return user.Id;
         }
-        private async ValueTask<decimal> GetUserPrice2Async(User user)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Test purpose.")]
+        private static async ValueTask<decimal> GetUserPrice2Async(User user)
         {
             await Task.Delay(1000);
             return user.Price;
         }
-        private async ValueTask Wait2Async()
+        private static async ValueTask Wait2Async()
         {
             await Task.Delay(1000);
         }
-        private async Task WaitAsync()
+        private static async Task WaitAsync()
         {
             await Task.Delay(1000);
         }
@@ -80,7 +83,7 @@ namespace Rystem.Test.UnitTest
         public async Task Fifth()
         {
             var user = new User { Id = 1 };
-            Expression<Func<User, Task>> expression =  x => WaitAsync();
+            Expression<Func<User, Task>> expression = x => WaitAsync();
             LambdaExpression lambdaExpression = expression;
             await lambdaExpression.InvokeAsync(user);
             Assert.True(true);
@@ -93,6 +96,14 @@ namespace Rystem.Test.UnitTest
             LambdaExpression lambdaExpression = expression;
             await lambdaExpression.InvokeAsync(user);
             Assert.True(true);
+        }
+        [Fact]
+        public void Conversion()
+        {
+            Expression<Func<User, int>> expression = x => x.Id;
+            var result = expression.Convert<User, int, decimal>(new User { Id = 13 });
+            Assert.Equal(typeof(decimal), result.GetType());
+            Assert.Equal(13M, result);
         }
     }
 }

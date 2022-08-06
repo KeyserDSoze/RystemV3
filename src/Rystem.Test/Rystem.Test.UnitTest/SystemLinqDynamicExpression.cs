@@ -80,6 +80,26 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(43m, value);
         }
         [Fact]
+        public async Task ThirdWithAnotherType()
+        {
+            var user = new User { Id = 1 };
+            Expression<Func<User, ValueTask<int>>> expression = x => GetUserId2Async(x);
+            LambdaExpression lambdaExpression = expression;
+            var value = await lambdaExpression.InvokeAsync(typeof(decimal), user);
+            Assert.Equal(1m, value);
+            Assert.Equal(typeof(decimal), value!.GetType());
+        }
+        [Fact]
+        public async Task FourthWithAnotherType()
+        {
+            var user = new User { Id = 1, Price = 43 };
+            Expression<Func<User, ValueTask<decimal>>> expression = x => GetUserPrice2Async(x);
+            LambdaExpression lambdaExpression = expression;
+            var value = await lambdaExpression.InvokeAsync<int>(user);
+            Assert.Equal(43, value);
+            Assert.Equal(typeof(int), value.GetType());
+        }
+        [Fact]
         public async Task Fifth()
         {
             var user = new User { Id = 1 };

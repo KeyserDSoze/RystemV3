@@ -21,7 +21,11 @@ namespace System.Linq.Expressions
         public static (LambdaExpression Expression, Type Type) DeserializeAsDynamicAndRetrieveType<T>(this string expressionAsString)
             => ExpressionSerializer.DeserializeAsDynamicAndRetrieveType<T>(expressionAsString);
         private static readonly MethodInfo PreGenericInvoke = typeof(ExpressionExtensions).FetchMethods().First(x => x.Name == nameof(InvokeAsync) && x.IsGenericMethod && x.GetParameters().Any(t => t.ParameterType == typeof(Delegate)));
-
+        private static readonly List<string> PossibleNames = new()
+        {
+            "System.Threading.Tasks.ValueTask",
+            "System.Threading.Tasks.Task"
+        };
         public static async ValueTask InvokeAsync(this LambdaExpression lambdaExpression, params object[] args)
         {
             var compiledLambda = lambdaExpression.Compile();
@@ -47,14 +51,25 @@ namespace System.Linq.Expressions
         public static async ValueTask<T?> InvokeAsync<T>(this Delegate method, params object[] args)
         {
             var executedLambda = method.DynamicInvoke(args);
-            if (executedLambda is Task<T> task)
-                return await task.NoContext();
-            else if (executedLambda is ValueTask<T> valueTask)
-                return await valueTask.NoContext();
-            else if (executedLambda != null)
-                return (T)executedLambda;
-            else
+            if (executedLambda == null)
                 return default;
+            var type = executedLambda.GetType();
+            var assemblyName = type.AssemblyQualifiedName;
+            var assemblyBaseName = type.BaseType?.AssemblyQualifiedName;
+            object? returnValue = null;
+            if (assemblyName != null && assemblyBaseName != null &&
+                (PossibleNames.Any(x => assemblyName.Contains(x)) || PossibleNames.Any(x => assemblyBaseName.Contains(x))))
+                returnValue = await (dynamic)executedLambda;
+            else
+                returnValue = executedLambda;
+            if (returnValue == null)
+                return default;
+            Type currentType = returnValue.GetType();
+            Type wantedType = typeof(T);
+            if (currentType == wantedType)
+                return (T)returnValue;
+            else
+                return (T)Convert.ChangeType(returnValue, wantedType);
         }
         public static ValueTask<T?> InvokeAsync<T>(this LambdaExpression lambdaExpression, params object[] args)
             => lambdaExpression.Compile().InvokeAsync<T>(args);

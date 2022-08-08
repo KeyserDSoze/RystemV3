@@ -152,5 +152,14 @@ namespace Rystem.Test.UnitTest
             LambdaExpression deserialized = asString.DeserializeAsDynamic<User>();
             Expression<Func<User, int>> finalExpression = deserialized.AsExpression<User, int>();
         }
+        [Fact]
+        public void CastToAType2()
+        {
+            Expression<Func<User, int>> expression = (User x) => x.Id;
+            LambdaExpression lambdaExpression = expression;
+            var asString = lambdaExpression.Serialize();
+            LambdaExpression deserialized = asString.DeserializeAsDynamic(typeof(User));
+            Expression<Func<User, int>> finalExpression = deserialized.AsExpression<User, int>();
+        }
     }
 }

@@ -16,11 +16,12 @@ namespace System.Linq.Expressions
             => ExpressionSerializer.Deserialize<TResult>(expressionAsString).Compile();
         public static LambdaExpression DeserializeAsDynamic<T>(this string expressionAsString)
             => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString);
+        public static LambdaExpression DeserializeAsDynamic(this string expressionAsString, Type inputType)
+            => Generics.With(typeof(ExpressionExtensions), nameof(DeserializeAsDynamic), inputType).Invoke<LambdaExpression>(expressionAsString)!;
         public static Delegate DeserializeAndCompileAsDynamic<T>(this string expressionAsString)
             => ExpressionSerializer.DeserializeAsDynamic<T>(expressionAsString).Compile();
         public static (LambdaExpression Expression, Type Type) DeserializeAsDynamicAndRetrieveType<T>(this string expressionAsString)
             => ExpressionSerializer.DeserializeAsDynamicAndRetrieveType<T>(expressionAsString);
-        private static readonly MethodInfo PreGenericInvoke = typeof(ExpressionExtensions).FetchMethods().First(x => x.Name == nameof(InvokeAsync) && x.IsGenericMethod && x.GetParameters().Any(t => t.ParameterType == typeof(Delegate)));
         private static readonly List<string> PossibleNames = new()
         {
             "System.Threading.Tasks.ValueTask",
@@ -42,7 +43,7 @@ namespace System.Linq.Expressions
             => lambdaExpression.Compile().InvokeAsync(type, args);
         public static async ValueTask<object?> InvokeAsync(this Delegate method, Type type, params object[] args)
         {
-            var invokedMethod = PreGenericInvoke.MakeGenericMethod(type).Invoke(null, new object[] { method, args });
+            var invokedMethod = Generics.With(typeof(ExpressionExtensions), nameof(InvokeAsync), type).Invoke(method, args);
             if (invokedMethod == null)
                 return null!;
             var result = await (dynamic)invokedMethod;

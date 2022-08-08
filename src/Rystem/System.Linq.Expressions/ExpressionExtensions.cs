@@ -2,7 +2,7 @@
 
 namespace System.Linq.Expressions
 {
-    public static class ExpressionExtensions
+    public static partial class ExpressionExtensions
     {
         public static string Serialize(this Expression expression)
             => ExpressionSerializer.Serialize(expression);

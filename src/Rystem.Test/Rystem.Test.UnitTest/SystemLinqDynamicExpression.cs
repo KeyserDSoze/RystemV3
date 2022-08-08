@@ -143,5 +143,14 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(typeof(decimal), result.GetType());
             Assert.Equal(13M, result);
         }
+        [Fact]
+        public void CastToAType()
+        {
+            Expression<Func<User, int>> expression = (User x) => x.Id;
+            LambdaExpression lambdaExpression = expression;
+            var asString = lambdaExpression.Serialize();
+            LambdaExpression deserialized = asString.DeserializeAsDynamic<User>();
+            Expression<Func<User, int>> finalExpression = deserialized.AsExpression<User, int>();
+        }
     }
 }

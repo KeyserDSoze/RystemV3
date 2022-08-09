@@ -14,5 +14,10 @@ namespace System
             var value = _method.Invoke(null, inputs);
             return (TResult?)value;
         }
+        public TResult? Invoke<TResult>(object obj, params object[] inputs)
+        {
+            var value = _method.Invoke(obj, inputs);
+            return (TResult?)value;
+        }
     }
 }

@@ -43,10 +43,9 @@ namespace System.Linq.Expressions
             => lambdaExpression.Compile().InvokeAsync(type, args);
         public static async ValueTask<object?> InvokeAsync(this Delegate method, Type type, params object[] args)
         {
-            var invokedMethod = Generics.WithStatic(typeof(ExpressionExtensions), nameof(InvokeAsync), type).Invoke(method, args);
-            if (invokedMethod == null)
-                return null!;
-            var result = await (dynamic)invokedMethod;
+            var result = await Generics
+                .WithStatic(typeof(ExpressionExtensions), nameof(InvokeAsync), type)
+                .InvokeAsync(method, args);
             return result;
         }
         public static async ValueTask<T?> InvokeAsync<T>(this Delegate method, params object[] args)

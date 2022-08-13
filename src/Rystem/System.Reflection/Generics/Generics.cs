@@ -1,13 +1,13 @@
 ﻿using System.Collections.Concurrent;
-using System.Reflection;
-
-namespace System
+namespace System.Reflection
 {
     public static class Generics
     {
         private static readonly ConcurrentDictionary<string, MethodInfoWrapper> MethodsCache = new();
         private static readonly ConcurrentDictionary<string, StaticMethodInfoWrapper> StaticMethodsCache = new();
 
+        public static StaticMethodInfoWrapper WithStatic<TContainer>(string methodName, params Type[] generics)
+            => WithStatic(typeof(TContainer), methodName, generics);
         [Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Bypass is sure in this case.")]
         public static StaticMethodInfoWrapper WithStatic(Type containerType, string methodName, params Type[] generics)
         {
@@ -19,6 +19,8 @@ namespace System
             StaticMethodsCache.TryAdd(key, new(method));
             return StaticMethodsCache[key];
         }
+        public static MethodInfoWrapper With<TContainer>(string methodName, params Type[] generics)
+            => With(typeof(TContainer), methodName, generics);
         [Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Bypass is sure in this case.")]
         public static MethodInfoWrapper With(Type containerType, string methodName, params Type[] generics)
         {

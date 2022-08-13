@@ -17,6 +17,7 @@ namespace Rystem.Test.UnitTest
         internal sealed record MakeIt
         {
             public int Id { get; set; }
+            public double Value { get; set; }
             public string? B { get; set; }
             public Guid E { get; set; }
             public bool Sol { get; set; }
@@ -31,7 +32,7 @@ namespace Rystem.Test.UnitTest
         {
             List<MakeIt> makes = new();
             for (int i = 0; i < 100; i++)
-                makes.Add(new MakeIt { Id = i });
+                makes.Add(new MakeIt { Id = i, Value = i });
 
             Expression<Func<MakeIt, int>> expression = x => x.Id;
             string value = expression.Serialize();
@@ -85,6 +86,59 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(10, grouped3.Count());
             Assert.Equal(0M, grouped3.First().Key);
             Assert.Equal(2M, grouped3.Skip(2).First().Key);
+
+            Expression<Func<MakeIt, double>> expressionD = x => x.Value;
+            string valueD = expressionD.Serialize();
+            LambdaExpression newLambdaD = valueD.DeserializeAsDynamic<MakeIt>();
+            var gotD = makes.AsQueryable();
+            var cutD = gotD.OrderByDescending(newLambdaD).ThenByDescending(newLambdaD).ToList();
+            Assert.Equal(99D, cutD.First().Value);
+            Assert.Equal(98D, cutD.Skip(1).First().Value);
+            cutD = cutD.AsQueryable().OrderBy(newLambdaD).ThenBy(newLambdaD).ToList();
+            Assert.Equal(0D, cutD.First().Value);
+            Assert.Equal(1D, cutD.Skip(1).First().Value);
+            var queryableD = cutD.AsQueryable();
+            var averageD1 = (decimal)Convert.ChangeType(queryableD.Average(x => x.Value), typeof(decimal));
+            var averageD = queryableD.Average(newLambdaD);
+            Assert.Equal(averageD1, averageD);
+            Expression<Func<MakeIt, bool>> expressionD2 = x => x.Value >= 10;
+            string valueD2 = expressionD2.Serialize();
+            LambdaExpression newLambdaD2 = valueD2.DeserializeAsDynamic<MakeIt>();
+            var countD = queryableD.Count(newLambdaD2);
+            var countD2 = queryableD.LongCount(newLambdaD2);
+            Assert.Equal(countD, countD2);
+            Assert.Equal(90, countD);
+            var maxD = queryableD.Max(newLambdaD);
+            Assert.Equal(99D, maxD);
+            var minD = queryableD.Min(newLambdaD);
+            Assert.Equal(0D, minD);
+            var sumD1 = queryableD.Sum(x => x.Id);
+            var sumD2 = queryableD.Sum(newLambdaD);
+            Assert.Equal(sumD1, sumD2);
+            var whereD = queryableD.Where(newLambdaD2);
+            Assert.Equal(90, whereD.Count());
+            Expression<Func<MakeIt, double>> expressionD3 = x => x.Value / 10;
+            string valueD3 = expressionD3.Serialize();
+            LambdaExpression newLambdaD3 = valueD3.DeserializeAsDynamic<MakeIt>();
+            var distinctedD1 = queryableD.DistinctBy(x => x.Value / 10);
+            var distinctedD2 = queryableD.DistinctBy(newLambdaD3);
+            Assert.Equal(distinctedD1.Count(), distinctedD2.Count());
+            Assert.Equal(100, distinctedD2.Count());
+            var selectedD = queryableD.Select(newLambdaD);
+            Assert.Equal(0D, selectedD.First());
+            var selectedD2 = queryableD.Select<MakeIt, decimal>(newLambdaD);
+            Assert.Equal(0M, selectedD2.First());
+            var groupedD1 = queryableD.GroupBy(x => x.Value / 10);
+            var groupedD2 = queryableD.GroupBy(newLambdaD3);
+            Assert.Equal(groupedD1.Count(), groupedD2.Count());
+            Assert.Equal(100, groupedD2.Count());
+            Assert.Equal(0D, groupedD2.First().Key);
+            Assert.Equal(0.2D, groupedD2.Skip(2).First().Key);
+            var groupedD3 = queryableD.GroupBy<decimal, MakeIt>(newLambdaD3);
+            Assert.Equal(groupedD1.Count(), groupedD3.Count());
+            Assert.Equal(100, groupedD3.Count());
+            Assert.Equal(0M, groupedD3.First().Key);
+            Assert.Equal(0.2M, groupedD3.Skip(2).First().Key);
         }
     }
 }

@@ -8,14 +8,13 @@ namespace System.Linq
     public static class QueryableLinqExtensions
     {
         private static readonly ConcurrentDictionary<string, MethodInfo> Methods = new();
-        public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression)
+        private static MethodInfo GetMethod<TSource>(Type sourceType, string methodName, LambdaExpression expression)
         {
-            var resultType = typeof(TResult);
             var keyName = $"{methodName}_{expression.ReturnType.FullName}";
             if (!Methods.ContainsKey(keyName))
             {
                 MethodInfo? method = null;
-                foreach (var m in typeof(Queryable).FetchMethods()
+                foreach (var m in sourceType.FetchMethods()
                  .Where(m => m.Name == methodName && m.IsGenericMethodDefinition
                  && m.GetParameters().Length == 2))
                 {
@@ -38,15 +37,35 @@ namespace System.Linq
             MethodInfo genericMethod = has2Arguments ?
                 methodV.MakeGenericMethod(entityType, expression.ReturnType) :
                 methodV.MakeGenericMethod(entityType);
-
-            var newQuery = genericMethod
-                 .Invoke(genericMethod, new object[] { query, expression });
+            return genericMethod;
+        }
+        public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression, Type? typeWhereToSearchTheMethod = null)
+        {
+            if (typeWhereToSearchTheMethod == null)
+                typeWhereToSearchTheMethod = typeof(Queryable);
+            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression)
+                 .Invoke(null, new object[] { query, expression });
             if (newQuery == null)
                 return default!;
             if (newQuery is IConvertible)
-                return (TResult)Convert.ChangeType(newQuery!, resultType);
+                return (TResult)Convert.ChangeType(newQuery!, typeof(TResult));
             else
                 return (TResult)newQuery!;
+        }
+        public static async ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression, Type? typeWhereToSearchTheMethod = null)
+        {
+            if (typeWhereToSearchTheMethod == null)
+                typeWhereToSearchTheMethod = typeof(Queryable);
+            var newQuery = (dynamic)(GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression)
+                 .Invoke(null, new object[] { query, expression })!);
+            await newQuery;
+            var result = newQuery.Result;
+            if (result == null)
+                return default!;
+            if (result is IConvertible)
+                return (TResult)Convert.ChangeType(result!, typeof(TResult));
+            else
+                return (TResult)result!;
         }
         public static decimal Average<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Average), selector);

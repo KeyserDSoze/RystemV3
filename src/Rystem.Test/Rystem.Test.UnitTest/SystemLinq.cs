@@ -72,12 +72,19 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(10, distincted2.Count());
             var selected = queryable.Select(newLambda);
             Assert.Equal(0, selected.First());
+            var selected2 = queryable.Select<MakeIt, decimal>(newLambda);
+            Assert.Equal(0M, selected2.First());
             var grouped1 = queryable.GroupBy(x => x.Id / 10);
             var grouped2 = queryable.GroupBy(newLambda3);
             Assert.Equal(grouped1.Count(), grouped2.Count());
             Assert.Equal(10, grouped2.Count());
             Assert.Equal(0, grouped2.First().Key);
             Assert.Equal(2, grouped2.Skip(2).First().Key);
+            var grouped3 = queryable.GroupBy<decimal, MakeIt>(newLambda3);
+            Assert.Equal(grouped1.Count(), grouped3.Count());
+            Assert.Equal(10, grouped3.Count());
+            Assert.Equal(0M, grouped3.First().Key);
+            Assert.Equal(2M, grouped3.Skip(2).First().Key);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace System.Linq
     public static class QueryableLinqExtensions
     {
         private static readonly ConcurrentDictionary<string, MethodInfo> Methods = new();
-        public static TResult CallMethod<TSource, TResult>(string methodName, IQueryable<TSource> query, LambdaExpression expression)
+        public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression)
         {
             var resultType = typeof(TResult);
             var keyName = $"{methodName}_{expression.ReturnType.FullName}";
@@ -49,17 +49,17 @@ namespace System.Linq
                 return (TResult)newQuery!;
         }
         public static decimal Average<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => CallMethod<TSource, decimal>(nameof(Average), source, selector);
+            => source.CallMethod<TSource, decimal>(nameof(Average), selector);
         public static int Count<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
-            => CallMethod<TSource, int>(nameof(Count), source, predicate);
+            => source.CallMethod<TSource, int>(nameof(Count), predicate);
         public static IQueryable<TSource> DistinctBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => CallMethod<TSource, IQueryable<TSource>>(nameof(DistinctBy), source, keySelector);
+            => source.CallMethod<TSource, IQueryable<TSource>>(nameof(DistinctBy), keySelector);
         public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.GroupByAsEnumerable(keySelector).AsQueryable();
         private static IEnumerable<IGrouping<object, TSource>> GroupByAsEnumerable<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
         {
             PropertyInfo? property = null;
-            foreach (var item in CallMethod<TSource, dynamic>(nameof(GroupBy), source, keySelector))
+            foreach (var item in source.CallMethod<TSource, dynamic>(nameof(GroupBy), keySelector))
             {
                 if (property == null)
                 {
@@ -90,28 +90,28 @@ namespace System.Linq
 
             public IEnumerator<TElement> GetEnumerator()
                 => _enumerable.GetEnumerator();
-            IEnumerator IEnumerable.GetEnumerator() 
+            IEnumerator IEnumerable.GetEnumerator()
                 => GetEnumerator();
         }
         public static long LongCount<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
-            => CallMethod<TSource, long>(nameof(LongCount), source, predicate);
+            => source.CallMethod<TSource, long>(nameof(LongCount), predicate);
         public static object? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => CallMethod<TSource, object>(nameof(Max), source, selector);
+            => source.CallMethod<TSource, object>(nameof(Max), selector);
         public static object? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => CallMethod<TSource, object>(nameof(Min), source, selector);
+            => source.CallMethod<TSource, object>(nameof(Min), selector);
         public static IOrderedQueryable<TSource> OrderByDescending<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), source, keySelector);
+            => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), keySelector);
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), source, keySelector);
+            => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), keySelector);
         public static IQueryable<object> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => CallMethod<TSource, IQueryable>(nameof(Select), source, selector).OfType<object>();
+            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<object>();
         public static decimal Sum<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => CallMethod<TSource, decimal>(nameof(Sum), source, selector);
+            => source.CallMethod<TSource, decimal>(nameof(Sum), selector);
         public static IOrderedQueryable<TSource> ThenByDescending<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)
-            => CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenByDescending), source, keySelector);
+            => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenByDescending), keySelector);
         public static IOrderedQueryable<TSource> ThenBy<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)
-            => CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenBy), source, keySelector);
+            => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenBy), keySelector);
         public static IQueryable<TSource> Where<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
-            => CallMethod<TSource, IQueryable<TSource>>(nameof(Where), source, predicate);
+            => source.CallMethod<TSource, IQueryable<TSource>>(nameof(Where), predicate);
     }
 }

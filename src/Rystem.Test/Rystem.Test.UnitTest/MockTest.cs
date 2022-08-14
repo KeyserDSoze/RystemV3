@@ -10,11 +10,7 @@ namespace Rystem.Test.UnitTest
             private protected string X { get; }
             public string O => X;
             public string A { get; set; }
-
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3442:\"abstract\" classes should not have \"public\" constructors", Justification = "<Pending>")]
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
             public Alzio(string x) => X = x;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         }
         [Fact]
         public void Test1()

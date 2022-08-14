@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Rystem.Test.UnitTest
@@ -139,6 +140,25 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(100, groupedD3.Count());
             Assert.Equal(0M, groupedD3.First().Key);
             Assert.Equal(0.2M, groupedD3.Skip(2).First().Key);
+        }
+
+        [Fact]
+        public async Task Test2()
+        {
+            List<MakeIt> makes = new();
+            for (int i = 0; i < 100; i++)
+                makes.Add(new MakeIt { Id = i, Value = i });
+            IQueryable<MakeIt> items = makes.AsQueryable();
+
+            Expression<Func<MakeIt, bool>> expression = x => x.Value >= 10;
+            string value = expression.Serialize();
+            LambdaExpression newLambda = value.DeserializeAsDynamic<MakeIt>();
+
+            var result = await items.CallMethodAsync<MakeIt, IQueryable<MakeIt>>("GetAsync", null, typeof(QueryableExtensions));
+            var result2 = await items.CallMethodAsync<MakeIt, IQueryable<MakeIt>>("GetAsync", newLambda, typeof(QueryableExtensions));
+
+            Assert.Equal(100, result.Count());
+            Assert.Equal(90, result2.Count());
         }
     }
 }

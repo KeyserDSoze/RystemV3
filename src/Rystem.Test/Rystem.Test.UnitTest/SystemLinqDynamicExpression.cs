@@ -23,13 +23,11 @@ namespace Rystem.Test.UnitTest
             return user.Price;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Test purpose.")]
         private static async ValueTask<int> GetUserId2Async(User user)
         {
             await Task.Delay(1000);
             return user.Id;
         }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Test purpose.")]
         private static async ValueTask<decimal> GetUserPrice2Async(User user)
         {
             await Task.Delay(1000);

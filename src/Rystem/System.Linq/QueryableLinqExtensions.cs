@@ -2,26 +2,38 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace System.Linq
 {
     public static class QueryableLinqExtensions
     {
         private static readonly ConcurrentDictionary<string, MethodInfo> Methods = new();
-        private static MethodInfo GetMethod<TSource>(Type sourceType, string methodName, LambdaExpression expression)
+        private static readonly Type AsyncAttribute = typeof(AsyncStateMachineAttribute);
+        private static MethodInfo GetMethod<TSource>(Type sourceType, string methodName, LambdaExpression? expression, bool isAsync)
         {
-            var keyName = $"{methodName}_{expression.ReturnType.FullName}";
+            var entityType = typeof(TSource);
+            int numberOfParameters = 2;
+            if (expression == null && !isAsync)
+                numberOfParameters = 1;
+            else if (expression != null && isAsync)
+                numberOfParameters = 3;
+            var keyName = $"{methodName}_{expression?.ReturnType.FullName}_{numberOfParameters}";
             if (!Methods.ContainsKey(keyName))
             {
                 MethodInfo? method = null;
                 foreach (var m in sourceType.FetchMethods()
                  .Where(m => m.Name == methodName && m.IsGenericMethodDefinition
-                 && m.GetParameters().Length == 2))
+                 && m.GetParameters().Length == numberOfParameters
+                 && (!isAsync || m.GetCustomAttribute(AsyncAttribute) != null)))
                 {
-                    var type = m.GetParameters().LastOrDefault()?.ParameterType.GetGenericArguments().LastOrDefault()?.GetGenericArguments().LastOrDefault();
-                    if (type == null)
+                    var type =
+                        !isAsync ?
+                        m.GetParameters().LastOrDefault()?.ParameterType.GetGenericArguments().LastOrDefault()?.GetGenericArguments().LastOrDefault()
+                        : m.GetParameters()[^2]?.ParameterType.GetGenericArguments().LastOrDefault()?.GetGenericArguments().LastOrDefault();
+                    if (type == null && expression != null)
                         continue;
-                    if (type.FullName == null || type == expression.ReturnType)
+                    if (type?.FullName == null || (expression != null && type == expression.ReturnType))
                     {
                         method = m;
                         break;
@@ -31,20 +43,19 @@ namespace System.Linq
                     throw new InvalidOperationException($"It's not possibile to use lambda expressions with return type {expression.ReturnType.FullName} in method {methodName}.");
                 Methods.TryAdd(keyName, method);
             }
-            var entityType = typeof(TSource);
             var methodV = Methods[keyName];
-            var has2Arguments = methodV.GetGenericArguments().Length == 2;
+            var has2Arguments = methodV.GetGenericArguments().Length == 2 && expression != null;
             MethodInfo genericMethod = has2Arguments ?
-                methodV.MakeGenericMethod(entityType, expression.ReturnType) :
+                methodV.MakeGenericMethod(entityType, expression!.ReturnType) :
                 methodV.MakeGenericMethod(entityType);
             return genericMethod;
         }
-        public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression, Type? typeWhereToSearchTheMethod = null)
+        public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression? expression = null, Type? typeWhereToSearchTheMethod = null)
         {
             if (typeWhereToSearchTheMethod == null)
                 typeWhereToSearchTheMethod = typeof(Queryable);
-            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression)
-                 .Invoke(null, new object[] { query, expression });
+            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression, false)
+                 .Invoke(null, expression != null ? new object[] { query, expression } : new object[] { query });
             if (newQuery == null)
                 return default!;
             if (newQuery is IConvertible)
@@ -52,20 +63,24 @@ namespace System.Linq
             else
                 return (TResult)newQuery!;
         }
-        public static async ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression expression, Type? typeWhereToSearchTheMethod = null)
+        public static async ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression? expression = null, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
         {
             if (typeWhereToSearchTheMethod == null)
                 typeWhereToSearchTheMethod = typeof(Queryable);
-            var newQuery = (dynamic)(GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression)
-                 .Invoke(null, new object[] { query, expression })!);
-            await newQuery;
-            var result = newQuery.Result;
-            if (result == null)
-                return default!;
-            if (result is IConvertible)
-                return (TResult)Convert.ChangeType(result!, typeof(TResult));
-            else
-                return (TResult)result!;
+            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression, true)
+                 .Invoke(null, expression != null ? new object[] { query, expression, cancellation } : new object[] { query, cancellation })!;
+            object? result = null;
+            if (newQuery is Task<TResult> task)
+            {
+                await task;
+                result = task.Result;
+            }
+            else if (newQuery is ValueTask<TResult> valueTask)
+            {
+                await valueTask;
+                result = valueTask.Result;
+            }
+            return result.Cast<TResult>()!;
         }
         public static decimal Average<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Average), selector);

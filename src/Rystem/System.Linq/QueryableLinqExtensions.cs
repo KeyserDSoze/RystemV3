@@ -143,10 +143,10 @@ namespace System.Linq
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), keySelector);
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), keySelector);
-        public static IQueryable<object> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<object>();
+        public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<dynamic>();
         public static IQueryable<TResult> Select<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<object>().Select(x => x.Cast<TResult>());
+            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<dynamic>().Select(x => ((object)x).Cast<TResult>())!;
         public static decimal Sum<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Sum), selector);
         public static IOrderedQueryable<TSource> ThenByDescending<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)

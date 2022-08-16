@@ -98,6 +98,7 @@ namespace Rystem.Test.UnitTest
             Assert.Equal(10, distincted2.Count());
             var selected = queryable.Select(newLambda);
             Assert.Equal(0, selected.First());
+            Assert.Equal(typeof(int), selected.First().GetType());
             var selected2 = queryable.Select<MakeIt, decimal>(newLambda);
             Assert.Equal(0M, selected2.First());
             var grouped1 = queryable.GroupBy(x => x.Id / 10);

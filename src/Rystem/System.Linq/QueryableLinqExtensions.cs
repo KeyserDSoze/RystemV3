@@ -18,14 +18,14 @@ namespace System.Linq
                 numberOfParameters = 1;
             else if (expression != null && isAsync)
                 numberOfParameters = 3;
-            var keyName = $"{methodName}_{expression?.ReturnType.FullName}_{numberOfParameters}";
+            var keyName = $"{methodName}_{sourceType.FullName}_{expression?.ReturnType.FullName}_{numberOfParameters}";
             if (!Methods.ContainsKey(keyName))
             {
                 MethodInfo? method = null;
                 foreach (var m in sourceType.FetchMethods()
                  .Where(m => m.Name == methodName && m.IsGenericMethodDefinition
                  && m.GetParameters().Length == numberOfParameters
-                 && (!isAsync || m.GetCustomAttribute(AsyncAttribute) != null)))
+                 && (!isAsync || (m.ReturnType.Name.StartsWith("Task") || m.ReturnType.Name.StartsWith("ValueTask")))))
                 {
                     var type =
                         !isAsync ?
@@ -40,7 +40,7 @@ namespace System.Linq
                     }
                 }
                 if (method == null)
-                    throw new InvalidOperationException($"It's not possibile to use lambda expressions with return type {expression.ReturnType.FullName} in method {methodName}.");
+                    throw new InvalidOperationException($"It's not possibile to find a method {methodName} in {sourceType.FullName}.");
                 Methods.TryAdd(keyName, method);
             }
             var methodV = Methods[keyName];
@@ -63,6 +63,10 @@ namespace System.Linq
             else
                 return (TResult)newQuery!;
         }
+        public static ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, CancellationToken cancellation = default)
+            => CallMethodAsync<TSource, TResult>(query, methodName, null, null, cancellation);
+        public static ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
+            => CallMethodAsync<TSource, TResult>(query, methodName, null, typeWhereToSearchTheMethod, cancellation);
         public static async ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression? expression = null, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
         {
             if (typeWhereToSearchTheMethod == null)

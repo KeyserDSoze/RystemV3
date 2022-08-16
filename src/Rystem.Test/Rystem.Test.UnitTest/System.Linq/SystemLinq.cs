@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Rystem.Test.UnitTest.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +13,21 @@ namespace Rystem.Test.UnitTest
 {
     public class SystemLinq
     {
+        public class ForUserSecrets { }
+        private static readonly IServiceProvider _serviceProvider;
+        static SystemLinq()
+        {
+            var services = new ServiceCollection();
+            var configuration = new ConfigurationBuilder()
+               .AddUserSecrets<ForUserSecrets>()
+               .Build();
+            services.AddSingleton(configuration);
+            services.AddDbContext<SampleContext>(options =>
+            {
+                options.UseSqlServer(configuration["Database:ConnectionString"]);
+            }, ServiceLifetime.Scoped);
+            _serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+        }
         internal enum MakeType
         {
             No,
@@ -26,6 +45,11 @@ namespace Rystem.Test.UnitTest
             public List<string>? Samules { get; set; }
             public DateTime ExpirationTime { get; set; }
             public TimeSpan TimeSpan { get; set; }
+        }
+        private readonly SampleContext _context;
+        public SystemLinq()
+        {
+            _context = _serviceProvider.GetService<SampleContext>()!;
         }
 
         [Fact]
@@ -159,6 +183,25 @@ namespace Rystem.Test.UnitTest
 
             Assert.Equal(100, result.Count());
             Assert.Equal(90, result2.Count());
+        }
+        [Fact]
+        public async Task Test3()
+        {
+            var users = await _context.Users.ToListAsync().NoContext();
+            foreach (var user in users)
+                _context.Users.Remove(user);
+            await _context.SaveChangesAsync().NoContext();
+            for (int i = 0; i < 10; i++)
+                _context.Users.Add(new User
+                {
+                    Cognome = i.ToString(),
+                    Nome = i.ToString(),
+                    IndirizzoElettronico = i.ToString(),
+                });
+            await _context.SaveChangesAsync().NoContext();
+            var max = await _context.Users.Select(x => x.Identificativo).CallMethodAsync<int, int>("MaxAsync", typeof(EntityFrameworkQueryableExtensions));
+            var max2 = await _context.Users.Select(x => x.Identificativo).MaxAsync().NoContext();
+            Assert.Equal(max, max2);
         }
     }
 }

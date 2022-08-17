@@ -9,10 +9,8 @@ namespace System.Linq
     public static class QueryableLinqExtensions
     {
         private static readonly ConcurrentDictionary<string, MethodInfo> Methods = new();
-        private static readonly Type AsyncAttribute = typeof(AsyncStateMachineAttribute);
-        private static MethodInfo GetMethod<TSource>(Type sourceType, string methodName, LambdaExpression? expression, bool isAsync)
+        private static MethodInfo GetMethod(Type entityType, Type sourceType, string methodName, LambdaExpression? expression, bool isAsync)
         {
-            var entityType = typeof(TSource);
             int numberOfParameters = 2;
             if (expression == null && !isAsync)
                 numberOfParameters = 1;
@@ -54,7 +52,7 @@ namespace System.Linq
         {
             if (typeWhereToSearchTheMethod == null)
                 typeWhereToSearchTheMethod = typeof(Queryable);
-            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression, false)
+            var newQuery = GetMethod(typeof(TSource), typeWhereToSearchTheMethod, methodName, expression, false)
                  .Invoke(null, expression != null ? new object[] { query, expression } : new object[] { query });
             if (newQuery == null)
                 return default!;
@@ -63,15 +61,19 @@ namespace System.Linq
             else
                 return (TResult)newQuery!;
         }
+        public static ValueTask<TSource> CallMethodAsync<TSource>(this IQueryable<TSource> query, string methodName, CancellationToken cancellation = default)
+            => CallMethodAsync<TSource, TSource>(query, methodName, cancellation);
         public static ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, CancellationToken cancellation = default)
             => CallMethodAsync<TSource, TResult>(query, methodName, null, null, cancellation);
+        public static ValueTask<TSource> CallMethodAsync<TSource>(this IQueryable<TSource> query, string methodName, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
+            => CallMethodAsync<TSource, TSource>(query, methodName, null, typeWhereToSearchTheMethod, cancellation);
         public static ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
             => CallMethodAsync<TSource, TResult>(query, methodName, null, typeWhereToSearchTheMethod, cancellation);
         public static async ValueTask<TResult> CallMethodAsync<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression? expression = null, Type? typeWhereToSearchTheMethod = null, CancellationToken cancellation = default)
         {
             if (typeWhereToSearchTheMethod == null)
                 typeWhereToSearchTheMethod = typeof(Queryable);
-            var newQuery = GetMethod<TSource>(typeWhereToSearchTheMethod, methodName, expression, true)
+            var newQuery = GetMethod(typeof(TSource), typeWhereToSearchTheMethod, methodName, expression, true)
                  .Invoke(null, expression != null ? new object[] { query, expression, cancellation } : new object[] { query, cancellation })!;
             object? result = null;
             if (newQuery is Task<TResult> task)
@@ -81,8 +83,8 @@ namespace System.Linq
             }
             else if (newQuery is ValueTask<TResult> valueTask)
             {
-                await valueTask;
-                result = valueTask.Result;
+                await valueTask!;
+                result = valueTask!.Result;
             }
             return result.Cast<TResult>()!;
         }
@@ -108,7 +110,7 @@ namespace System.Linq
                 }
                 var key = ((object)property.GetValue(item)).Cast<TKey>();
                 var items = GetEnumerable();
-                var grouped = new Grouping<TKey, TSource>(key, items);
+                var grouped = new Grouping<TKey, TSource>(key!, items);
                 yield return grouped;
 
                 IEnumerable<TSource> GetEnumerable()
@@ -135,18 +137,23 @@ namespace System.Linq
         }
         public static long LongCount<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
             => source.CallMethod<TSource, long>(nameof(LongCount), predicate);
-        public static object? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, object>(nameof(Max), selector);
-        public static object? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, object>(nameof(Min), selector);
+        public static dynamic? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.CallMethod<TSource, dynamic>(nameof(Max), selector);
+        public static dynamic? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.CallMethod<TSource, dynamic>(nameof(Min), selector);
         public static IOrderedQueryable<TSource> OrderByDescending<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), keySelector);
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), keySelector);
         public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<dynamic>();
+        {
+            var value = Generics
+                .WithStatic(typeof(QueryableLinqExtensions), nameof(Select), typeof(TSource), selector.ReturnType)
+                .Invoke(source, selector) as IQueryable;
+            return value!.OfType<dynamic>();
+        }
         public static IQueryable<TResult> Select<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable>(nameof(Select), selector).OfType<dynamic>().Select(x => ((object)x).Cast<TResult>())!;
+            => source.CallMethod<TSource, IQueryable<TResult>>(nameof(Select), selector);
         public static decimal Sum<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Sum), selector);
         public static IOrderedQueryable<TSource> ThenByDescending<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)

@@ -1,4 +1,6 @@
-﻿namespace System
+﻿using System.Reflection;
+
+namespace System
 {
     public static class CastExtensions
     {
@@ -13,5 +15,8 @@
             else
                 return (T)entity;
         }
+        public static dynamic Cast(this object? entity, Type typeToCast) 
+            => Generics.WithStatic(typeof(CastExtensions), nameof(Cast), typeToCast)
+                .Invoke(entity!);
     }
 }

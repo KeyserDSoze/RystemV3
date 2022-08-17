@@ -200,8 +200,15 @@ namespace Rystem.Test.UnitTest
                     IndirizzoElettronico = i.ToString(),
                 });
             await _context.SaveChangesAsync().NoContext();
-            var max = await _context.Users.Select(x => x.Identificativo).CallMethodAsync<int, int>("MaxAsync", typeof(EntityFrameworkQueryableExtensions));
-            var max2 = await _context.Users.Select(x => x.Identificativo).MaxAsync().NoContext();
+
+            Expression<Func<User, int>> expression = x => x.Identificativo;
+            string value = expression.Serialize();
+            LambdaExpression newLambda = value.DeserializeAsDynamic<User>();
+
+            //var max3 = _context.Users.Select(newLambda).MaxAsync().NoContext();
+            var selected = _context.Users.Select(newLambda);
+            var max2 = await selected.MaxAsync().NoContext();
+            var max = await _context.Users.Select(newLambda).CallMethodAsync("MaxAsync", typeof(EntityFrameworkQueryableExtensions));
             Assert.Equal(max, max2);
         }
     }

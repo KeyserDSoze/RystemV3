@@ -208,7 +208,7 @@ namespace Rystem.Test.UnitTest
             //var max3 = _context.Users.Select(newLambda).MaxAsync().NoContext();
             var selected = _context.Users.Select(newLambda);
             var max2 = await selected.MaxAsync().NoContext();
-            var max = await _context.Users.Select(newLambda).CallMethodAsync("MaxAsync", typeof(EntityFrameworkQueryableExtensions));
+            var max = await _context.Users.Select(newLambda).CallMethodAsync("MaxAsync", typeof(EntityFrameworkQueryableExtensions)).NoContext();
             Assert.Equal(max, max2);
         }
     }

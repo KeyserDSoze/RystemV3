@@ -147,6 +147,9 @@ namespace System.Linq
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), keySelector);
         public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
         {
+            selector = Expression.Lambda(
+                        Expression.Convert(selector.Body, typeof(object)),
+                        selector.Parameters);
             var value = Generics
                 .WithStatic(typeof(QueryableLinqExtensions), nameof(Select), typeof(TSource), selector.ReturnType)
                 .Invoke(source, selector) as IQueryable;

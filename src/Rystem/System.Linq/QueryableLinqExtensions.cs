@@ -108,17 +108,17 @@ namespace System.Linq
         public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.GroupBy<object, TSource>(keySelector).AsQueryable();
         public static IQueryable<IGrouping<TKey, TSource>> GroupBy<TKey, TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => source.CallMethod<TSource, IQueryable<IGrouping<TKey, TSource>>>(nameof(GroupBy), keySelector.ChangeLambda<TKey>());
+            => source.CallMethod<TSource, IQueryable<IGrouping<TKey, TSource>>>(nameof(GroupBy), keySelector.ChangeReturnType<TKey>());
         public static long LongCount<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
             => source.CallMethod<TSource, long>(nameof(LongCount), predicate);
         public static object? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.Max<TSource, object>(selector);
         public static object? Max<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, TResult>(nameof(Max), selector.ChangeLambda<TResult>());
+            => source.CallMethod<TSource, TResult>(nameof(Max), selector.ChangeReturnType<TResult>());
         public static object? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.Min<TSource, object>(selector);
         public static object? Min<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, TResult>(nameof(Min), selector.ChangeLambda<TResult>());
+            => source.CallMethod<TSource, TResult>(nameof(Min), selector.ChangeReturnType<TResult>());
         public static IOrderedQueryable<TSource> OrderByDescending<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), keySelector);
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
@@ -126,7 +126,7 @@ namespace System.Linq
         public static IQueryable<object> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.Select<TSource, object>(selector);
         public static IQueryable<TResult> Select<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable<TResult>>(nameof(Select), selector.ChangeLambda<TResult>());
+            => source.CallMethod<TSource, IQueryable<TResult>>(nameof(Select), selector.ChangeReturnType<TResult>());
         public static decimal Sum<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Sum), selector);
         public static IOrderedQueryable<TSource> ThenByDescending<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)
@@ -135,14 +135,5 @@ namespace System.Linq
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenBy), keySelector);
         public static IQueryable<TSource> Where<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
             => source.CallMethod<TSource, IQueryable<TSource>>(nameof(Where), predicate);
-        private static LambdaExpression ChangeLambda<T>(this LambdaExpression expression)
-        {
-            Type type = typeof(T);
-            if (expression.ReturnType != type)
-                return Expression.Lambda(
-                        Expression.Convert(expression.Body, type),
-                        expression.Parameters);
-            return expression;
-        }
     }
 }

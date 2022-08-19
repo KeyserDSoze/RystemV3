@@ -60,6 +60,15 @@ you can deserialize as dynamic and use the linq dynamic methods
     var cut = got.OrderByDescending(newLambda).ThenByDescending(newLambda).ToList();
 
 please see the unit test [here](https://github.com/KeyserDSoze/RystemV3/blob/master/src/Rystem.Test/Rystem.Test.UnitTest/System.Linq/SystemLinq.cs) to understand better how it works
+You may deal with return type of your lambda expression:
+
+     LambdaExpression newLambda = value.DeserializeAsDynamic<MakeIt>();
+     newLambda =  newLambda.ChangeReturnType<bool>();
+
+or
+
+     newLambda =  newLambda.ChangeReturnType(typeof(bool));
+
 
 ### Reflection helper
 

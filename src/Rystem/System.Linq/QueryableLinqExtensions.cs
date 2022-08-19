@@ -1,14 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace System.Linq
 {
     public static class QueryableLinqExtensions
     {
-        private static readonly ConcurrentDictionary<string, MethodInfo> Methods = new();
+        private sealed record MethodInfoWrapper(MethodInfo Method, int GenericParametersNumber);
+        private static readonly ConcurrentDictionary<string, MethodInfoWrapper> Methods = new();
         private static MethodInfo GetMethod(Type entityType, Type sourceType, string methodName, LambdaExpression? expression, bool isAsync)
         {
             int numberOfParameters = 2;
@@ -16,36 +15,48 @@ namespace System.Linq
                 numberOfParameters = 1;
             else if (expression != null && isAsync)
                 numberOfParameters = 3;
-            var keyName = $"{methodName}_{sourceType.FullName}_{expression?.ReturnType.FullName}_{numberOfParameters}";
+            bool expressionIsNull = expression == null;
+            string returnTypeName = expression?.ReturnType.Name ?? string.Empty;
+            var keyName = $"{methodName}_{sourceType.FullName}_{returnTypeName}_{numberOfParameters}";
             if (!Methods.ContainsKey(keyName))
             {
                 MethodInfo? method = null;
                 foreach (var m in sourceType.FetchMethods()
                  .Where(m => m.Name == methodName && m.IsGenericMethodDefinition
                  && m.GetParameters().Length == numberOfParameters
-                 && (!isAsync || (m.ReturnType.Name.StartsWith("Task") || m.ReturnType.Name.StartsWith("ValueTask")))))
+                 && (!isAsync || expressionIsNull || (m.ReturnType.Name.StartsWith("Task") || m.ReturnType.Name.StartsWith("ValueTask")))))
                 {
-                    var type =
-                        !isAsync ?
-                        m.GetParameters().LastOrDefault()?.ParameterType.GetGenericArguments().LastOrDefault()?.GetGenericArguments().LastOrDefault()
-                        : m.GetParameters()[^2]?.ParameterType.GetGenericArguments().LastOrDefault()?.GetGenericArguments().LastOrDefault();
-                    if (type == null && expression != null)
-                        continue;
-                    if (type?.FullName == null || (expression != null && type == expression.ReturnType))
+                    if (!expressionIsNull)
                     {
-                        method = m;
-                        break;
+                        var checkType = expression!.ReturnType;
+                        var lambdaType = m.GetParameters()[!isAsync ? ^1 : ^2].ParameterType;
+
+                        if (!lambdaType.IsTheSameTypeOrASon(typeof(Expression)) || !IsTheRightGeneric(lambdaType))
+                            continue;
+
+                        bool IsTheRightGeneric(Type toCheck)
+                        {
+                            if (toCheck.IsGenericParameter || checkType == toCheck)
+                                return true;
+                            else if (toCheck.IsGenericType && IsTheRightGeneric(toCheck.GetGenericArguments().Last()))
+                                    return true;
+
+                            return false;
+                        }
                     }
+
+                    method = m;
+                    break;
+
                 }
                 if (method == null)
-                    throw new InvalidOperationException($"It's not possibile to find a method {methodName} in {sourceType.FullName}.");
-                Methods.TryAdd(keyName, method);
+                    throw new InvalidOperationException($"It's not possibile to find a suitable method {methodName} in {sourceType.FullName} with {numberOfParameters} generic parameters.");
+                Methods.TryAdd(keyName, new(method, method.GetGenericArguments().Length));
             }
             var methodV = Methods[keyName];
-            var has2Arguments = methodV.GetGenericArguments().Length == 2 && expression != null;
-            MethodInfo genericMethod = has2Arguments ?
-                methodV.MakeGenericMethod(entityType, expression!.ReturnType) :
-                methodV.MakeGenericMethod(entityType);
+            Type[] genericParameters = methodV.GenericParametersNumber == 2 && !expressionIsNull ?
+                new Type[] { entityType, expression!.ReturnType } : new Type[] { entityType };
+            MethodInfo genericMethod = methodV.Method.MakeGenericMethod(genericParameters);
             return genericMethod;
         }
         public static TResult CallMethod<TSource, TResult>(this IQueryable<TSource> query, string methodName, LambdaExpression? expression = null, Type? typeWhereToSearchTheMethod = null)
@@ -95,68 +106,27 @@ namespace System.Linq
         public static IQueryable<TSource> DistinctBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IQueryable<TSource>>(nameof(DistinctBy), keySelector);
         public static IQueryable<IGrouping<object, TSource>> GroupBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => source.GroupByAsEnumerable<object, TSource>(keySelector).AsQueryable();
+            => source.GroupBy<object, TSource>(keySelector).AsQueryable();
         public static IQueryable<IGrouping<TKey, TSource>> GroupBy<TKey, TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-            => source.GroupByAsEnumerable<TKey, TSource>(keySelector).AsQueryable();
-        private static IEnumerable<IGrouping<TKey, TSource>> GroupByAsEnumerable<TKey, TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
-        {
-            PropertyInfo? property = null;
-            foreach (var item in source.CallMethod<TSource, dynamic>(nameof(GroupBy), keySelector))
-            {
-                if (property == null)
-                {
-                    Type type = item.GetType();
-                    property = type.FetchProperties().First(x => x.Name == "Key");
-                }
-                var key = ((object)property.GetValue(item)).Cast<TKey>();
-                var items = GetEnumerable();
-                var grouped = new Grouping<TKey, TSource>(key!, items);
-                yield return grouped;
-
-                IEnumerable<TSource> GetEnumerable()
-                {
-                    foreach (var it in item)
-                        yield return (TSource)it;
-                }
-            }
-        }
-        private sealed class Grouping<TKey, TElement> : IGrouping<TKey, TElement>
-        {
-            private readonly IEnumerable<TElement> _enumerable;
-            public Grouping(TKey key, IEnumerable<TElement> enumerable)
-            {
-                Key = key;
-                _enumerable = enumerable;
-            }
-            public TKey Key { get; }
-
-            public IEnumerator<TElement> GetEnumerator()
-                => _enumerable.GetEnumerator();
-            IEnumerator IEnumerable.GetEnumerator()
-                => GetEnumerator();
-        }
+            => source.CallMethod<TSource, IQueryable<IGrouping<TKey, TSource>>>(nameof(GroupBy), keySelector.ChangeLambda<TKey>());
         public static long LongCount<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
             => source.CallMethod<TSource, long>(nameof(LongCount), predicate);
-        public static dynamic? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, dynamic>(nameof(Max), selector);
-        public static dynamic? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, dynamic>(nameof(Min), selector);
+        public static object? Max<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.Max<TSource, object>(selector);
+        public static object? Max<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.CallMethod<TSource, TResult>(nameof(Max), selector.ChangeLambda<TResult>());
+        public static object? Min<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.Min<TSource, object>(selector);
+        public static object? Min<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.CallMethod<TSource, TResult>(nameof(Min), selector.ChangeLambda<TResult>());
         public static IOrderedQueryable<TSource> OrderByDescending<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderByDescending), keySelector);
         public static IOrderedQueryable<TSource> OrderBy<TSource>(this IQueryable<TSource> source, LambdaExpression keySelector)
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(OrderBy), keySelector);
-        public static IQueryable<dynamic> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
-        {
-            selector = Expression.Lambda(
-                        Expression.Convert(selector.Body, typeof(object)),
-                        selector.Parameters);
-            var value = Generics
-                .WithStatic(typeof(QueryableLinqExtensions), nameof(Select), typeof(TSource), selector.ReturnType)
-                .Invoke(source, selector) as IQueryable;
-            return value!.OfType<dynamic>();
-        }
+        public static IQueryable<object> Select<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
+            => source.Select<TSource, object>(selector);
         public static IQueryable<TResult> Select<TSource, TResult>(this IQueryable<TSource> source, LambdaExpression selector)
-            => source.CallMethod<TSource, IQueryable<TResult>>(nameof(Select), selector);
+            => source.CallMethod<TSource, IQueryable<TResult>>(nameof(Select), selector.ChangeLambda<TResult>());
         public static decimal Sum<TSource>(this IQueryable<TSource> source, LambdaExpression selector)
             => source.CallMethod<TSource, decimal>(nameof(Sum), selector);
         public static IOrderedQueryable<TSource> ThenByDescending<TSource>(this IOrderedQueryable<TSource> source, LambdaExpression keySelector)
@@ -165,5 +135,14 @@ namespace System.Linq
             => source.CallMethod<TSource, IOrderedQueryable<TSource>>(nameof(ThenBy), keySelector);
         public static IQueryable<TSource> Where<TSource>(this IQueryable<TSource> source, LambdaExpression predicate)
             => source.CallMethod<TSource, IQueryable<TSource>>(nameof(Where), predicate);
+        private static LambdaExpression ChangeLambda<T>(this LambdaExpression expression)
+        {
+            Type type = typeof(T);
+            if (expression.ReturnType != type)
+                return Expression.Lambda(
+                        Expression.Convert(expression.Body, type),
+                        expression.Parameters);
+            return expression;
+        }
     }
 }

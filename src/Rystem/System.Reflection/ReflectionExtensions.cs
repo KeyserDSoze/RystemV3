@@ -32,6 +32,14 @@
         /// <summary>
         /// Check if type is the same type or a son of toCompare.
         /// </summary>
+        /// <param name="type">Type to check.</param>
+        /// <param name="toCompare">Type to compare.</param>
+        /// <returns>bool</returns>
+        public static bool IsTheSameTypeOrASon<TCompared>(this Type type, TCompared toCompare)
+            => type.IsTheSameTypeOrASon(toCompare?.GetType() ?? typeof(TCompared));
+        /// <summary>
+        /// Check if type is the same type or a son of toCompare.
+        /// </summary>
         /// <typeparam name="T">Type to check.</typeparam>
         /// <typeparam name="TCompared">Type to compare.</typeparam>
         /// <param name="item">Item to check.</param>
@@ -45,7 +53,7 @@
         /// <param name="type">Type to check.</param>
         /// <param name="toCompare">Type to compare.</param>
         /// <returns>bool</returns>
-        public static bool IsTheSameTypeOrAFather(this Type type, Type toCompare) 
+        public static bool IsTheSameTypeOrAFather(this Type type, Type toCompare)
             => toCompare.IsTheSameTypeOrASon(type);
         /// <summary>
         /// Check if type is the same type or a father of toCompare.
@@ -75,6 +83,20 @@
         /// <returns></returns>
         public static bool IsTheSameTypeOrAParent<T, TCompared>(this T item, TCompared toCompare)
             => (item?.GetType() ?? typeof(T)).IsTheSameTypeOrAParent(toCompare?.GetType() ?? typeof(TCompared));
+
+        public static bool HasTheSameTypeOrAParentInGeneric<T>(this T item, Type toCompare)
+        {
+            if (item == null)
+                return false;
+            foreach (var argument in item.GetType().GetGenericArguments())
+            {
+                if (argument.IsGenericParameter && argument.HasTheSameTypeOrAParentInGeneric(toCompare))
+                    return true;
+                else if (IsTheSameTypeOrASon(argument, toCompare) || IsTheSameTypeOrASon(toCompare, argument))
+                    return true;
+            }
+            return false;
+        }
         /// <summary>
         /// Fetch all instance | public properties.
         /// </summary>

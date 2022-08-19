@@ -179,7 +179,7 @@ namespace Rystem.Test.UnitTest
             string value = expression.Serialize();
             LambdaExpression newLambda = value.DeserializeAsDynamic<MakeIt>();
 
-            var result = await items.CallMethodAsync<MakeIt, IQueryable<MakeIt>>("GetAsync", null, typeof(QueryableExtensions));
+            var result = await items.CallMethodAsync<MakeIt, IQueryable<MakeIt>>("GetAsync", typeof(QueryableExtensions));
             var result2 = await items.CallMethodAsync<MakeIt, IQueryable<MakeIt>>("GetAsync", newLambda, typeof(QueryableExtensions));
 
             Assert.Equal(100, result.Count());
@@ -207,8 +207,8 @@ namespace Rystem.Test.UnitTest
 
             //var max3 = _context.Users.Select(newLambda).MaxAsync().NoContext();
             var selected = _context.Users.Select(newLambda);
-            var max2 = await selected.MaxAsync().NoContext();
             var max = await _context.Users.Select(newLambda).CallMethodAsync("MaxAsync", typeof(EntityFrameworkQueryableExtensions)).NoContext();
+            var max2 = await selected.MaxAsync().NoContext();
             Assert.Equal(max, max2);
         }
     }

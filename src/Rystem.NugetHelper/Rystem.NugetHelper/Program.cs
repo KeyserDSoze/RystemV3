@@ -11,7 +11,7 @@ namespace Rystem.Nuget
     {
         static readonly Regex regexForVersion = new("<Version>[^<]*</Version>");
         static readonly Dictionary<string, string> newVersionOfLibraries = new();
-        static readonly VersionType Type = VersionType.Patch;
+        static readonly VersionType Type = VersionType.Major;
         static readonly Regex PackageReference = new("<PackageReference[^>]*>");
         static readonly Regex Include = new("Include=");
         static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
@@ -22,10 +22,12 @@ namespace Rystem.Nuget
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
-            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not.");
+            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not, With (3) go in debug. With (4) check if jump to the next.");
             var line = Console.ReadLine();
             Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : UpdateConfiguration.UpdateTree;
             bool checkIfGoAhead = line == "2";
+            bool isDebug = line == "3";
+            bool jumpToNext = line == "4";
             while (currentUpdateTree != null)
             {
                 var context = new LibraryContext("0.0.0");
@@ -33,14 +35,15 @@ namespace Rystem.Nuget
                 {
                     foreach (var rystemDirectory in rystemDirectories)
                     {
-                        await ReadInDeepAsync(rystemDirectory, context, currentUpdateTree);
+                        await ReadInDeepAsync(rystemDirectory, context, currentUpdateTree, isDebug);
                     }
                 }
                 Console.WriteLine($"Current major version is {context.Version.V}");
                 foreach (var toUpdate in context.RepoToUpdate)
                 {
                     Console.WriteLine($"repo to update {toUpdate}");
-                    await CommitAndPushAsync(toUpdate, context.Version.V);
+                    if (!isDebug)
+                        await CommitAndPushAsync(toUpdate, context.Version.V);
                 }
                 if (checkIfGoAhead)
                 {
@@ -51,11 +54,12 @@ namespace Rystem.Nuget
                     }
                 }
                 if (currentUpdateTree.Son != null)
-                    await Task.Delay(5 * 60 * 1000);
+                    if (!isDebug)
+                        await Task.Delay(5 * 60 * 1000);
                 currentUpdateTree = currentUpdateTree.Son;
             }
         }
-        static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update)
+        static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update, bool isDebug)
         {
             bool fileFound = false;
             foreach (var file in directoryInfo!.GetFiles())
@@ -96,7 +100,8 @@ namespace Rystem.Nuget
                             string path = @$"{Repo.Split(file.FullName).First()}\repos\{Repo.Split(file.FullName).Last().Split('\\').First()}";
                             if (!context.RepoToUpdate.Contains(path))
                                 context.RepoToUpdate.Add(path);
-                            await File.WriteAllTextAsync(file.FullName, content);
+                            if (!isDebug)
+                                await File.WriteAllTextAsync(file.FullName, content);
                         }
                     }
                     fileFound = true;
@@ -106,7 +111,7 @@ namespace Rystem.Nuget
             if (!fileFound)
                 foreach (var directory in directoryInfo.GetDirectories().Where(x => x.Name != "bin" && x.Name != "obj"))
                 {
-                    await ReadInDeepAsync(directory, context, update);
+                    await ReadInDeepAsync(directory, context, update, isDebug);
                 }
         }
         static async Task CommitAndPushAsync(string path, string newVersion)

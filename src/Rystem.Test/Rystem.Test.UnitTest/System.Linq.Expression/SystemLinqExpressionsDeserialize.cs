@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
-using static Rystem.Test.UnitTest.SystemLinqExpressions;
+using static Rystem.Test.UnitTest.Expression.SystemLinqExpressions;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Expression
 {
     public class SystemLinqExpressionsDeserialize
     {

@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Text
 {
     public class TextExtensionsTest
     {

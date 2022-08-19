@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Linq
 {
     public class SystemLinq
     {

@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Reflection
 {
     public class SystemReflection
     {

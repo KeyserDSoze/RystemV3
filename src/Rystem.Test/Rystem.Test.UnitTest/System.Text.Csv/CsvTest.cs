@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text.Csv;
 using System.Text.Json;
 using Xunit;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Csv
 {
     public class CsvTest
     {

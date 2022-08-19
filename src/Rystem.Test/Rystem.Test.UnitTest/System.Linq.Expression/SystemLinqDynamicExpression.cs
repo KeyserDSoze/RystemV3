@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Rystem.Test.UnitTest
+namespace Rystem.Test.UnitTest.Expression
 {
     public class SystemLinqDynamicExpression
     {
@@ -149,6 +151,11 @@ namespace Rystem.Test.UnitTest
             var asString = lambdaExpression.Serialize();
             LambdaExpression deserialized = asString.DeserializeAsDynamic<User>();
             Expression<Func<User, int>> finalExpression = deserialized.AsExpression<User, int>();
+            Expression<Func<User, decimal>> finalExpression2 = deserialized.AsExpression<User, decimal>();
+
+            List<User> users = new() { new User { Id = 13 } };
+            var average = users.Average(finalExpression2.Compile());
+            Assert.Equal(13, average);
         }
         [Fact]
         public void CastToAType2()
@@ -158,6 +165,12 @@ namespace Rystem.Test.UnitTest
             var asString = lambdaExpression.Serialize();
             LambdaExpression deserialized = asString.DeserializeAsDynamic(typeof(User));
             Expression<Func<User, int>> finalExpression = deserialized.AsExpression<User, int>();
+
+            Expression<Func<User, decimal>> finalExpression2 = deserialized.AsExpression<User, decimal>();
+
+            List<User> users = new() { new User { Id = 13 } };
+            var average = users.Average(finalExpression2.Compile());
+            Assert.Equal(13, average);
         }
     }
 }

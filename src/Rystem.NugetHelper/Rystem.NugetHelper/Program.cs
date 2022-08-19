@@ -11,7 +11,7 @@ namespace Rystem.Nuget
     {
         static readonly Regex regexForVersion = new("<Version>[^<]*</Version>");
         static readonly Dictionary<string, string> newVersionOfLibraries = new();
-        static readonly VersionType Type = VersionType.Major;
+        static readonly VersionType Type = VersionType.Patch;
         static readonly Regex PackageReference = new("<PackageReference[^>]*>");
         static readonly Regex Include = new("Include=");
         static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
@@ -22,12 +22,11 @@ namespace Rystem.Nuget
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
-            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not, With (3) go in debug. With (4) check if jump to the next.");
+            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not, With (3) go in debug.");
             var line = Console.ReadLine();
             Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : UpdateConfiguration.UpdateTree;
             bool checkIfGoAhead = line == "2";
             bool isDebug = line == "3";
-            bool jumpToNext = line == "4";
             while (currentUpdateTree != null)
             {
                 var context = new LibraryContext("0.0.0");

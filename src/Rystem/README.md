@@ -51,6 +51,16 @@ you can deserialize and compile at the same time with
 
     var newExpression = expressionAsString.DeserializeAndCompile<MakeIt, bool>();
 
+you can deserialize as dynamic and use the linq dynamic methods
+
+    Expression<Func<MakeIt, int>> expression = x => x.Id;
+    string value = expression.Serialize();
+    LambdaExpression newLambda = value.DeserializeAsDynamic<MakeIt>();
+    var got = makes.AsQueryable();
+    var cut = got.OrderByDescending(newLambda).ThenByDescending(newLambda).ToList();
+
+please see the unit test [here](https://github.com/KeyserDSoze/RystemV3/blob/master/src/Rystem.Test/Rystem.Test.UnitTest/System.Linq/SystemLinq.cs) to understand better how it works
+
 ### Reflection helper
 
 #### Name of calling class
@@ -64,6 +74,24 @@ You can get the properties, fields and constructors for your class (and singleto
     Type.FetchProperties();
     Type.FecthConstructors();
     Type.FetchFields();
+
+You can check if a Type is a son or a father or both of other type (in the example Zalo and Folli are Sulo).
+You may find more information in unit test [here](https://github.com/KeyserDSoze/RystemV3/blob/master/src/Rystem.Test/Rystem.Test.UnitTest/System.Reflection/ReflectionTest.cs)
+    
+    Zalo zalo = new();
+    Zalo zalo2 = new();
+    Folli folli = new();
+    Sulo sulo = new();
+    object quo = new();
+    int x = 2;
+    decimal y = 3;
+    Assert.True(zalo.IsTheSameTypeOrASon(sulo));
+    Assert.True(folli.IsTheSameTypeOrASon(sulo));
+    Assert.True(zalo.IsTheSameTypeOrASon(zalo2));
+    Assert.True(zalo.IsTheSameTypeOrASon(quo));
+    Assert.False(sulo.IsTheSameTypeOrASon(zalo));
+    Assert.True(sulo.IsTheSameTypeOrAParent(zalo));
+    Assert.False(y.IsTheSameTypeOrAParent(x));
 
 #### Mock a Type
 If you need to create a type over an abstract class or interface you may use the mocking system of Rystem.

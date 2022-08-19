@@ -2,9 +2,9 @@
 
 namespace System.Reflection
 {
-    internal class MockedAssembly
+    internal sealed class MockedAssembly
     {
-        private record MockedType(Type Type);
+        private sealed record MockedType(Type Type);
         public static MockedAssembly Instance { get; } = new();
         public ModuleBuilder Builder { get; }
         private MockedAssembly()

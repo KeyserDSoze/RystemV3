@@ -6,6 +6,31 @@ namespace Rystem.Test.UnitTest.Reflection
 {
     public class SystemReflection
     {
+        public interface IMogalo
+        {
+            int X { get; }
+            int Y { get; }
+            int Z { get; set; }
+            int U { get; init; }
+            int W { get; init; }
+        }
+        public class MySuperClass : IMogalo
+        {
+            public int X { get; }
+            public int Y { get; }
+            public int Z { get; set; }
+            public int U { get; init; }
+            public int W { get; init; }
+            public MySuperClass(int x)
+            {
+                X = x;
+            }
+            public MySuperClass(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
         [Fact]
         public async Task StaticTest()
         {
@@ -55,6 +80,36 @@ namespace Rystem.Test.UnitTest.Reflection
         public T Create<T>(T x)
         {
             return x;
+        }
+        [Fact]
+        public void CreateWithDynamicConstructor()
+        {
+            var superClass = (MySuperClass)typeof(MySuperClass).ConstructWithBestDynamicFit(3, 4, 5, 6);
+            Assert.Equal(3, superClass!.X);
+            Assert.Equal(4, superClass.Y);
+            Assert.Equal(5, superClass.Z);
+            Assert.Equal(6, superClass.U);
+            Assert.Equal(0, superClass.W);
+            var superClass2 = Constructor.InvokeWithBestDynamicFit<MySuperClass>(5, 6, 7, 8);
+            Assert.Equal(5, superClass2!.X);
+            Assert.Equal(6, superClass2.Y);
+            Assert.Equal(7, superClass2.Z);
+            Assert.Equal(8, superClass2.U);
+            Assert.Equal(0, superClass2.W);
+            var mogalo = Constructor.InvokeWithBestDynamicFit<IMogalo>(9, 10, 11, 21);
+            Assert.NotNull(mogalo);
+            Assert.Equal(9, mogalo!.X);
+            Assert.Equal(10, mogalo.Y);
+            Assert.Equal(11, mogalo.Z);
+            Assert.Equal(21, mogalo.U);
+            Assert.Equal(0, mogalo.W);
+            var mogalo2 = (IMogalo)typeof(IMogalo).ConstructWithBestDynamicFit(9, 10, 11, 21)!;
+            Assert.NotNull(mogalo2);
+            Assert.Equal(9, mogalo2!.X);
+            Assert.Equal(10, mogalo2.Y);
+            Assert.Equal(11, mogalo2.Z);
+            Assert.Equal(21, mogalo2.U);
+            Assert.Equal(0, mogalo2.W);
         }
     }
 }

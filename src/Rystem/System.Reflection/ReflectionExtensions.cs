@@ -7,6 +7,7 @@
         private static readonly Dictionary<string, FieldInfo[]> AllFields = new();
         private static readonly Dictionary<string, MethodInfo[]> AllMethods = new();
         private static readonly Dictionary<string, MethodInfo[]> AllStaticMethods = new();
+
         private static readonly object Semaphore = new();
         private static readonly Type ObjectType = typeof(object);
         /// <summary>

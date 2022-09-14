@@ -82,7 +82,14 @@ namespace System.Reflection
                         }
                         catch
                         {
-                            instruction.Operand = module.ResolveMember(metadataToken);
+                            try
+                            {
+                                instruction.Operand = module.ResolveMember(metadataToken);
+                            }
+                            catch
+                            {
+
+                            }
                         }
                         break;
                     case OperandType.InlineSig:

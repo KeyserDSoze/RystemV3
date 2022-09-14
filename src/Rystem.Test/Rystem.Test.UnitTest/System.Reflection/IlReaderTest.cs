@@ -17,6 +17,17 @@ namespace Rystem.Test.UnitTest.Reflection
             {
                 throw new NotImplementedException();
             }
+            private string Soly(int x, Func<int, bool> y)
+            {
+                return y.Invoke(x).ToString();
+            }
+            public string Something3()
+            {
+                return Soly(1, x =>
+                {
+                    return x == 1;
+                });
+            }
         }
 
         [Fact]
@@ -38,6 +49,13 @@ namespace Rystem.Test.UnitTest.Reflection
             method = typeof(Sulo).GetMethod(nameof(Sulo.Something2), BindingFlags.Public | BindingFlags.Instance);
             value = method.GetInstructions();
             Assert.Equal((value[1].Operand as dynamic).DeclaringType.Name, typeof(NotImplementedException).Name);
+        }
+        [Fact]
+        public void Test3()
+        {
+            var method = typeof(Sulo).GetMethod(nameof(Sulo.Something3), BindingFlags.Public | BindingFlags.Instance);
+            var value = method.GetInstructions();
+            Assert.Equal(value[1].Operand, "dddd");
         }
     }
 }

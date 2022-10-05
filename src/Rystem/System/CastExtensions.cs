@@ -25,13 +25,11 @@ namespace System
                     return (dynamic)nint.Parse(stringEntity);
                 else if (type == typeof(nuint))
                     return (dynamic)nuint.Parse(stringEntity);
-                else if (entity is IConvertible)
-                    return (T)Convert.ChangeType(entity, type);
             }
-            else if (entity is IConvertible)
+            if (entity is IConvertible)
                 return (T)Convert.ChangeType(entity, typeof(T));
-
-            return (T)entity;
+            else
+                return (T)entity;
         }
         public static dynamic Cast(this object? entity, Type typeToCast)
             => Generics.WithStatic(typeof(CastExtensions), nameof(Cast), typeToCast)

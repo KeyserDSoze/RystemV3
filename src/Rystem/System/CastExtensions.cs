@@ -10,12 +10,30 @@ namespace System
                 return default;
             if (entity is T casted)
                 return casted;
+            else if (entity is string stringEntity)
+            {
+                var type = typeof(T);
+                if (type == typeof(string))
+                    return (dynamic)stringEntity;
+                else if (type == typeof(Guid))
+                    return (dynamic)Guid.Parse(stringEntity);
+                else if (type == typeof(DateTimeOffset))
+                    return (dynamic)DateTimeOffset.Parse(stringEntity);
+                else if (type == typeof(TimeSpan))
+                    return (dynamic)TimeSpan.Parse(stringEntity);
+                else if (type == typeof(nint))
+                    return (dynamic)nint.Parse(stringEntity);
+                else if (type == typeof(nuint))
+                    return (dynamic)nuint.Parse(stringEntity);
+                else if (entity is IConvertible)
+                    return (T)Convert.ChangeType(entity, type);
+            }
             else if (entity is IConvertible)
                 return (T)Convert.ChangeType(entity, typeof(T));
-            else
-                return (T)entity;
+
+            return (T)entity;
         }
-        public static dynamic Cast(this object? entity, Type typeToCast) 
+        public static dynamic Cast(this object? entity, Type typeToCast)
             => Generics.WithStatic(typeof(CastExtensions), nameof(Cast), typeToCast)
                 .Invoke(entity!);
     }

@@ -30,6 +30,9 @@ namespace Rystem.Test.UnitTest
             B? b2 = null;
             var result5 = b2.Cast<A>();
             Assert.Null(result5);
+            var guid = Guid.NewGuid().ToString();
+            var result6 = guid.Cast<Guid>();
+            Assert.Equal(guid, result6.ToString());
         }
     }
 }

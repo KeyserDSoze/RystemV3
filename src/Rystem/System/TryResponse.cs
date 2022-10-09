@@ -4,5 +4,7 @@
     {
         public static implicit operator T(TryResponse<T> response)
             => response.Entity!;
+        public static implicit operator bool(TryResponse<T> response)
+           => response.Entity is not null;
     }
 }

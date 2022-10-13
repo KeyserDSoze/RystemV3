@@ -4,7 +4,7 @@
     {
         public Type Type { get; } = typeof(MemberExpression);
 
-        public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
+        public IEnumerable<ExpressionBearer> Read(ExpressionBearer bearer, ExpressionContext context)
         {
             var expressions = new List<ExpressionBearer>();
             if (bearer.Expression is MemberExpression memberExpression)

@@ -6,12 +6,12 @@ namespace System.Linq.Expressions
     {
         public Type Type { get; } = typeof(ConstantExpression);
 
-        public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
+        public IEnumerable<ExpressionBearer> Read(ExpressionBearer bearer, ExpressionContext context)
         {
             if (bearer.Key != null && bearer.Member != null && bearer.Expression is ConstantExpression constantExpression)
                 context.ReplaceWithValue(bearer.Key,
                     (bearer.Member as FieldInfo)!.GetValue(constantExpression.Value)!);
-            return null;
+            return Array.Empty<ExpressionBearer>();
         }
     }
 }

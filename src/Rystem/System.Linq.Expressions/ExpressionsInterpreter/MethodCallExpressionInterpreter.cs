@@ -7,7 +7,7 @@ namespace System.Linq.Expressions
     {
         public Type Type { get; } = typeof(MethodCallExpression);
 
-        public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
+        public IEnumerable<ExpressionBearer> Read(ExpressionBearer bearer, ExpressionContext context)
         {
             List<ExpressionBearer> expressions = new();
             if (bearer.Expression is MethodCallExpression methodCallExpression)

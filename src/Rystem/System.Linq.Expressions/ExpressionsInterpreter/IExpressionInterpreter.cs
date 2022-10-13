@@ -3,6 +3,6 @@
     internal interface IExpressionInterpreter
     {
         Type Type { get; }
-        IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context);
+        IEnumerable<ExpressionBearer> Read(ExpressionBearer bearer, ExpressionContext context);
     }
 }

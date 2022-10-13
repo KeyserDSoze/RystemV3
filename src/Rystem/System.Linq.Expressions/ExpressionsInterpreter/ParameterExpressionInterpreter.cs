@@ -4,12 +4,12 @@
     {
         public Type Type { get; } = typeof(ParameterExpression);
 
-        public IEnumerable<ExpressionBearer>? Read(ExpressionBearer bearer, ExpressionContext context)
+        public IEnumerable<ExpressionBearer> Read(ExpressionBearer bearer, ExpressionContext context)
         {
             //if (parameterExpression.IsByRef)
             //{
             //}
-            return null;
+            return Array.Empty<ExpressionBearer>();
         }
     }
 }

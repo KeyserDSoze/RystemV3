@@ -1,4 +1,7 @@
-﻿namespace System.Reflection
+﻿using System.Collections;
+using System.Diagnostics.SymbolStore;
+
+namespace System.Reflection
 {
     public static class ReflectionExtensions
     {
@@ -177,13 +180,23 @@
         /// </summary>
         /// <param name="type"></param>
         /// <returns>object</returns>
-        public static object? CreateWithDefault(this Type type)
+        public static object? CreateWithDefault(this Type type, bool interfacesWithValue = false)
         {
             if (!s_defaultCreators.ContainsKey(type.FullName!))
             {
                 if (type.IsPrimitive())
                     s_defaultCreators.Add(type.FullName!,
                         () => Activator.CreateInstance(type));
+                else if (type.IsAssignableFrom(typeof(IDictionary)))
+                {
+                    s_defaultCreators.Add(type.FullName!,
+                        () => Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(type.GetGenericArguments())));
+                }
+                else if (type != typeof(string) && type.IsAssignableFrom(typeof(IEnumerable)))
+                {
+                    s_defaultCreators.Add(type.FullName!,
+                        () => Activator.CreateInstance(typeof(List<>).MakeGenericType(type.GetGenericArguments())));
+                }
                 var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault();
                 if (constructor != null)
                 {

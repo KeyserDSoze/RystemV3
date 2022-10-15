@@ -171,5 +171,43 @@
                         AllStaticMethods.Add(type.FullName!, type.GetMethods(BindingFlags.Public | BindingFlags.Static));
             return AllStaticMethods[type.FullName!];
         }
+        private static readonly Dictionary<string, Func<object?>> s_defaultCreators = new();
+        /// <summary>
+        /// Create an instance with default values.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>object</returns>
+        public static object? CreateWithDefault(this Type type)
+        {
+            if (!s_defaultCreators.ContainsKey(type.FullName!))
+            {
+                if (type.IsPrimitive())
+                    s_defaultCreators.Add(type.FullName!,
+                        () => Activator.CreateInstance(type));
+                var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault();
+                if (constructor != null)
+                {
+                    s_defaultCreators.Add(type.FullName!,
+                        () => Activator.CreateInstance(type, constructor.GetParameters().Select(x => x.DefaultValue)));
+                }
+                else
+                    s_defaultCreators.Add(type.FullName!,
+                        () => Activator.CreateInstance(type));
+            }
+            return s_defaultCreators[type.FullName!].Invoke();
+        }
+        /// <summary>
+        /// Create an instance with default values.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>T?</returns>
+        public static T? CreateWithDefault<T>(this Type type)
+        {
+            var value = type.CreateWithDefault();
+            if (value == null)
+                return default;
+            else
+                return (T)value;
+        }
     }
 }

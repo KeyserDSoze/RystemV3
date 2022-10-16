@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-using System.Diagnostics.SymbolStore;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace System.Reflection
 {
@@ -174,38 +175,63 @@ namespace System.Reflection
                         AllStaticMethods.Add(type.FullName!, type.GetMethods(BindingFlags.Public | BindingFlags.Static));
             return AllStaticMethods[type.FullName!];
         }
-        private static readonly Dictionary<string, Func<object?>> s_defaultCreators = new();
+        private static readonly ConcurrentDictionary<string, Func<object?>> s_defaultCreators = new();
         /// <summary>
         /// Create an instance with default values.
         /// </summary>
         /// <param name="type"></param>
         /// <returns>object</returns>
-        public static object? CreateWithDefault(this Type type, bool interfacesWithValue = false)
+        public static object? CreateWithDefault(this Type type)
         {
             if (!s_defaultCreators.ContainsKey(type.FullName!))
             {
                 if (type.IsPrimitive())
-                    s_defaultCreators.Add(type.FullName!,
-                        () => Activator.CreateInstance(type));
-                else if (type.IsAssignableFrom(typeof(IDictionary)))
                 {
-                    s_defaultCreators.Add(type.FullName!,
+                    if (type == typeof(string))
+                        s_defaultCreators.TryAdd(type.FullName!,
+                        () => null);
+                    else
+                        s_defaultCreators.TryAdd(type.FullName!,
+                            () => Activator.CreateInstance(type));
+                }
+                else if (type.IsAssignableTo(typeof(IDictionary)))
+                {
+                    s_defaultCreators.TryAdd(type.FullName!,
                         () => Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(type.GetGenericArguments())));
                 }
-                else if (type != typeof(string) && type.IsAssignableFrom(typeof(IEnumerable)))
+                else if (type.IsAssignableTo(typeof(IEnumerable)))
                 {
-                    s_defaultCreators.Add(type.FullName!,
-                        () => Activator.CreateInstance(typeof(List<>).MakeGenericType(type.GetGenericArguments())));
-                }
-                var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderBy(x => x.GetParameters().Length).FirstOrDefault();
-                if (constructor != null)
-                {
-                    s_defaultCreators.Add(type.FullName!,
-                        () => Activator.CreateInstance(type, constructor.GetParameters().Select(x => x.DefaultValue)));
+                    var generics = type.GetGenericArguments();
+                    if (generics.Length > 0)
+                    {
+                        var currentType = typeof(List<>).MakeGenericType(generics);
+                        s_defaultCreators.TryAdd(type.FullName!, () => Activator.CreateInstance(currentType));
+                    }
+                    else
+                        s_defaultCreators.TryAdd(type.FullName!, () => new ArrayList());
                 }
                 else
-                    s_defaultCreators.Add(type.FullName!,
-                        () => Activator.CreateInstance(type));
+                {
+                    if (type.IsInterface || type.IsAbstract)
+                        type = type.Mock()!;
+                    var constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).OrderByDescending(x => x.GetParameters().Length).FirstOrDefault();
+                    if (constructor != null)
+                    {
+                        var parameters = constructor.GetParameters();
+                        if (parameters.Length > 0)
+                            s_defaultCreators.TryAdd(type.FullName!,
+                                () =>
+                                {
+                                    return Activator.CreateInstance(type, parameters.Select(x => x.ParameterType.CreateWithDefault()).ToArray());
+                                });
+                        else
+                            s_defaultCreators.TryAdd(type.FullName!,
+                                () => Activator.CreateInstance(type));
+                    }
+                    else
+                        s_defaultCreators.TryAdd(type.FullName!,
+                            () => Activator.CreateInstance(type));
+                }
             }
             return s_defaultCreators[type.FullName!].Invoke();
         }
@@ -217,6 +243,55 @@ namespace System.Reflection
         public static T? CreateWithDefault<T>(this Type type)
         {
             var value = type.CreateWithDefault();
+            if (value == null)
+                return default;
+            else
+                return (T)value;
+        }
+        private static readonly ConcurrentDictionary<string, Func<object?>> s_defaultCreatorsWithConstructorPropertiesAndField = new();
+        /// <summary>
+        /// Create an instance with default values.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>object</returns>
+        public static object? CreateWithDefaultConstructorPropertiesAndField(this Type type)
+        {
+            if (!s_defaultCreatorsWithConstructorPropertiesAndField.ContainsKey(type.FullName!))
+            {
+                if (type.IsPrimitive() || type.IsAssignableTo(typeof(IDictionary)) || type.IsAssignableTo(typeof(IEnumerable)))
+                {
+                    s_defaultCreatorsWithConstructorPropertiesAndField.TryAdd(type.FullName!,
+                        () => type.CreateWithDefault());
+                }
+                else
+                {
+                    List<PropertyInfo> properties = type
+                            .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic)
+                            .Where(x => x.SetMethod != null)
+                            .ToList();
+                    List<FieldInfo> fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic).ToList();
+                    s_defaultCreatorsWithConstructorPropertiesAndField.TryAdd(type.FullName!,
+                        () =>
+                        {
+                            var entity = type.CreateWithDefault();
+                            foreach (var property in properties)
+                                property.SetValue(entity, property.PropertyType.CreateWithDefaultConstructorPropertiesAndField());
+                            foreach (var field in fields)
+                                field.SetValue(entity, field.FieldType.CreateWithDefaultConstructorPropertiesAndField());
+                            return entity;
+                        });
+                }
+            }
+            return s_defaultCreatorsWithConstructorPropertiesAndField[type.FullName!].Invoke();
+        }
+        /// <summary>
+        /// Create an instance with default values.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>T?</returns>
+        public static T? CreateWithDefaultConstructorPropertiesAndField<T>(this Type type)
+        {
+            var value = type.CreateWithDefaultConstructorPropertiesAndField();
             if (value == null)
                 return default;
             else

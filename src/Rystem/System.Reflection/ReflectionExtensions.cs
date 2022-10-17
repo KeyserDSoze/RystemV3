@@ -194,12 +194,12 @@ namespace System.Reflection
                         s_defaultCreators.TryAdd(type.FullName!,
                             () => Activator.CreateInstance(type));
                 }
-                else if (type.IsAssignableTo(typeof(IDictionary)))
+                else if ((type.IsInterface || type.IsAbstract) && type.IsAssignableTo(typeof(IDictionary)))
                 {
                     s_defaultCreators.TryAdd(type.FullName!,
                         () => Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(type.GetGenericArguments())));
                 }
-                else if (type.IsAssignableTo(typeof(IEnumerable)))
+                else if ((type.IsInterface || type.IsAbstract) && type.IsAssignableTo(typeof(IEnumerable)))
                 {
                     var generics = type.GetGenericArguments();
                     if (generics.Length > 0)

@@ -42,6 +42,7 @@ namespace Rystem.Test.UnitTest.Reflection
             public IEnumerable<string> Values { get; }
             public bool X { get; }
             public Dictionary<string, string> Complex { get; init; }
+            public HashSet<int> Integers { get; init; }
             private readonly Foo _tiny;
             public Foo Tiny => _tiny;
             public void FooToon()
@@ -104,10 +105,11 @@ namespace Rystem.Test.UnitTest.Reflection
             (instance.Values as List<string>)!.Add("aaa");
             Assert.Equal("aaa", instance.Values.First());
             instance.Complex.Add("x", "y");
-            Assert.Equal(1, instance.Complex.Count);
+            Assert.Equal(1, instance.Complex.Count!);
             Assert.NotNull(instance.Tiny);
             (instance.Tiny.Values as List<string>)!.Add("aaa");
             Assert.Equal("aaa", instance.Tiny.Values.First());
+            Assert.Equal(0, instance.Integers.Count!);
         }
     }
 }

@@ -26,7 +26,8 @@
             "Rystem.RepositoryFramework.Api.Client", "Rystem.RepositoryFramework.Api.Server",
             "Rystem.RepositoryFramework.Infrastructure.InMemory", "Rystem.RepositoryFramework.MigrationTools",
             "Rystem.RepositoryFramework.Cache", "Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql",
-            "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob", "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table")
+            "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob", "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table",
+            "RepositoryFramework.Infrastructure.Dynamics.Dataverse", "RepositoryFramework.Infrastructure.EntityFramework")
             .CreateSon()
             .AddProject("Rystem.BackgroundJob", "Rystem.RepositoryFramework.Cache.Azure.Storage.Blob")
             .CreateSon()

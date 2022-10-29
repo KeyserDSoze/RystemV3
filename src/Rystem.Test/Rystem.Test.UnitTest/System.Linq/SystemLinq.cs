@@ -212,5 +212,32 @@ namespace Rystem.Test.UnitTest.Linq
             var max2 = await selected.MaxAsync().NoContext();
             Assert.Equal(max, max2);
         }
+        [Fact]
+        public async Task CheckAsyncIntegrationAsync()
+        {
+            List<MakeIt> makes = new();
+            for (int i = 0; i < 100; i++)
+                makes.Add(new MakeIt { Id = i, Value = i });
+
+            var checkAllIdMoreThanZeroOrZero = await makes.AllAsync(x => ValueTask.FromResult(x.Id >= 0));
+            Assert.True(checkAllIdMoreThanZeroOrZero);
+            checkAllIdMoreThanZeroOrZero = await makes.AllAsync(x => Task.FromResult(x.Id >= 0));
+            Assert.True(checkAllIdMoreThanZeroOrZero);
+
+            var checkAnyIdIsZero = await makes.AnyAsync(x => ValueTask.FromResult(x.Id == 0));
+            Assert.True(checkAnyIdIsZero);
+            checkAnyIdIsZero = await makes.AnyAsync(x => Task.FromResult(x.Id == 0));
+            Assert.True(checkAnyIdIsZero);
+
+            var checkIfAllIdMoreThanZero = await makes.AllAsync(x => ValueTask.FromResult(x.Id > 0));
+            Assert.False(checkIfAllIdMoreThanZero);
+            checkIfAllIdMoreThanZero = await makes.AllAsync(x => Task.FromResult(x.Id > 0));
+            Assert.False(checkIfAllIdMoreThanZero);
+
+            var checkAnyIdIsMinusOne = await makes.AnyAsync(x => ValueTask.FromResult(x.Id == -1));
+            Assert.False(checkAnyIdIsMinusOne);
+            checkAnyIdIsMinusOne = await makes.AnyAsync(x => Task.FromResult(x.Id == -1));
+            Assert.False(checkAnyIdIsMinusOne);
+        }
     }
 }

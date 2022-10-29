@@ -17,32 +17,30 @@
         static UpdateConfiguration()
         {
             UpdateTree = new Update()
-            .AddProject("Rystem");
-            UpdateTree
+            .AddProject("Rystem")
             .CreateSon()
-            .AddProject("Rystem.DependencyInjectionExtensions", "Rystem.RepositoryFramework.Abstractions")
+            .AddProject("Rystem.Concurrency", "Rystem.RepositoryFramework.Abstractions")
             .CreateSon()
-            .AddProject("Rystem.Concurrency",
+            .AddProject("Rystem.BackgroundJob",
             "Rystem.RepositoryFramework.Api.Client", "Rystem.RepositoryFramework.Api.Server",
             "Rystem.RepositoryFramework.Infrastructure.InMemory", "Rystem.RepositoryFramework.MigrationTools",
             "Rystem.RepositoryFramework.Cache", "Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql",
             "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob", "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table",
-            "RepositoryFramework.Infrastructure.Dynamics.Dataverse", "RepositoryFramework.Infrastructure.EntityFramework",
-            "RepositoryFramework.Infrastructure.MsSql")
+            "Rystem.RepositoryFramework.Infrastructure.Dynamics.Dataverse", "Rystem.RepositoryFramework.Infrastructure.EntityFramework",
+            "Rystem.RepositoryFramework.Infrastructure.MsSql")
             .CreateSon()
-            .AddProject("Rystem.BackgroundJob", "Rystem.RepositoryFramework.Cache.Azure.Storage.Blob")
-            .CreateSon()
-            .AddProject("Rystem.Queue");
+            .AddProject("Rystem.Queue", "Rystem.RepositoryFramework.Cache.Azure.Storage.Blob");
 
             OnlyRepositoryTree = new Update()
-            .AddProject("Rystem.RepositoryFramework.Abstractions");
-            OnlyRepositoryTree
+            .AddProject("Rystem.RepositoryFramework.Abstractions")
             .CreateSon()
-            .AddProject(
+            .AddProject("Rystem.BackgroundJob",
             "Rystem.RepositoryFramework.Api.Client", "Rystem.RepositoryFramework.Api.Server",
             "Rystem.RepositoryFramework.Infrastructure.InMemory", "Rystem.RepositoryFramework.MigrationTools",
             "Rystem.RepositoryFramework.Cache", "Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql",
-            "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob", "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table")
+            "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Blob", "Rystem.RepositoryFramework.Infrastructure.Azure.Storage.Table",
+            "Rystem.RepositoryFramework.Infrastructure.Dynamics.Dataverse", "Rystem.RepositoryFramework.Infrastructure.EntityFramework",
+            "Rystem.RepositoryFramework.Infrastructure.MsSql")
             .CreateSon()
             .AddProject("Rystem.RepositoryFramework.Cache.Azure.Storage.Blob");
         }

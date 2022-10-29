@@ -1,7 +1,7 @@
 ﻿namespace System.Threading.Tasks
 {
-    public static class RystemTask
+    internal static class RystemTask
     {
-        public static bool WaitYourStartingThread = false;
+        public static bool WaitYourStartingThread { get; set; }
     }
 }

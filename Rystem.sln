@@ -7,17 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{480D0F2C-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem", "src\Rystem\Rystem.csproj", "{33C6BB28-49D8-458E-8DCB-39FF916FF141}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.ConsoleApp", "src\Rystem.Test\Rystem.Test.ConsoleApp\Rystem.Test.ConsoleApp.csproj", "{91EC3697-72E2-4293-B92B-ECEF94B50615}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.DependencyInjectionExtensions", "src\Rystem.DependencyInjectionExtensions\Rystem.DependencyInjectionExtensions.csproj", "{B02B791D-BF83-45C1-A786-7A6D0AB3549B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rystem.Test.UnitTest", "src\Rystem.Test\Rystem.Test.UnitTest\Rystem.Test.UnitTest.csproj", "{62E51893-F666-4418-82BC-74E13F3D75B1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E5DD2E4D-F4A7-4BBF-B7E4-6FE4C42F6227}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		CODE-OF-CONDUCT.md = CODE-OF-CONDUCT.md
-		.github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml = .github\workflows\PackageDeploy.Rystem.DependencyInjectionExtensions.yml
 		.github\workflows\PackageDeploy.Rystem.yml = .github\workflows\PackageDeploy.Rystem.yml
 		README.md = README.md
 		icons\rystem.icons.psd = icons\rystem.icons.psd
@@ -37,14 +32,6 @@ Global
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33C6BB28-49D8-458E-8DCB-39FF916FF141}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91EC3697-72E2-4293-B92B-ECEF94B50615}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B02B791D-BF83-45C1-A786-7A6D0AB3549B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62E51893-F666-4418-82BC-74E13F3D75B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,7 +45,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{91EC3697-72E2-4293-B92B-ECEF94B50615} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{62E51893-F666-4418-82BC-74E13F3D75B1} = {480D0F2C-02EA-48A8-9100-5DECB679579E}
 		{AE742F30-5114-4F68-BC1C-85F004D461AC} = {99AA616D-A4FF-4BA2-9795-8E8501ED9C8B}
 	EndGlobalSection

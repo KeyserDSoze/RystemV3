@@ -192,9 +192,10 @@ namespace Rystem.Test.UnitTest.Linq
             foreach (var user in users)
                 _context.Users.Remove(user);
             await _context.SaveChangesAsync().NoContext();
-            for (int i = 0; i < 10; i++)
+            for (int i = 1; i <= 10; i++)
                 _context.Users.Add(new User
                 {
+                    Identificativo = i,
                     Cognome = i.ToString(),
                     Nome = i.ToString(),
                     IndirizzoElettronico = i.ToString(),

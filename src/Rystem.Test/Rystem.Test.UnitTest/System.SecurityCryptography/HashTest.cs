@@ -7,7 +7,6 @@ namespace Rystem.Test.UnitTest.Security.Cryptography
 {
     public class HashTest
     {
-
         public class Foo
         {
             public IEnumerable<string> Values { get; init; }

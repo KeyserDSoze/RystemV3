@@ -17,7 +17,8 @@
         static UpdateConfiguration()
         {
             UpdateTree = new Update()
-            .AddProject("Rystem")
+            .AddProject("Rystem");
+            UpdateTree
             .CreateSon()
             .AddProject("Rystem.Concurrency", "Rystem.RepositoryFramework.Abstractions")
             .CreateSon()
@@ -32,9 +33,10 @@
             .AddProject("Rystem.Queue", "Rystem.RepositoryFramework.Cache.Azure.Storage.Blob");
 
             OnlyRepositoryTree = new Update()
-            .AddProject("Rystem.RepositoryFramework.Abstractions")
+            .AddProject("Rystem.RepositoryFramework.Abstractions");
+            OnlyRepositoryTree
             .CreateSon()
-            .AddProject("Rystem.BackgroundJob",
+            .AddProject(
             "Rystem.RepositoryFramework.Api.Client", "Rystem.RepositoryFramework.Api.Server",
             "Rystem.RepositoryFramework.Infrastructure.InMemory", "Rystem.RepositoryFramework.MigrationTools",
             "Rystem.RepositoryFramework.Cache", "Rystem.RepositoryFramework.Infrastructure.Azure.Cosmos.Sql",

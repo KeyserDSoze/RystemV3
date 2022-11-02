@@ -6,16 +6,15 @@ namespace Rystem
     {
         public static ServiceProviderUtility Instance { get; set; } = new();
         private ServiceProviderUtility() { }
-        public Func<IServiceProvider, Task>? AfterBuildEvent { get; set; }
+        public List<Func<IServiceProvider, Task>> AfterBuildEvents { get; } = new();
         public async Task AfterBuildAsync(IServiceProvider providers)
         {
-            var scope = providers.CreateScope();
-            if (AfterBuildEvent != null)
-                _ = await Try.WithDefaultOnCatchAsync(() =>
-                {
-                    return AfterBuildEvent.Invoke(scope.ServiceProvider);
-                });
-            scope.Dispose();
+            foreach (var buildEvent in AfterBuildEvents)
+            {
+                var scope = providers.CreateScope();
+                _ = await Try.WithDefaultOnCatchAsync(() => buildEvent.Invoke(scope.ServiceProvider));
+                scope.Dispose();
+            }
         }
     }
 }

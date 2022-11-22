@@ -1,16 +1,12 @@
 ﻿using System.Globalization;
+using System.Reflection;
 
 namespace System.Text.Csv
 {
     internal class PrimitiveSerializer : ICsvInterpreter
     {
         public int Priority => 6;
-        public bool IsValid(Type type) => type == typeof(int) || type == typeof(int?) || type == typeof(uint) || type == typeof(uint?)
-                || type == typeof(short) || type == typeof(short?) || type == typeof(ushort) || type == typeof(ushort?)
-                || type == typeof(long) || type == typeof(long?) || type == typeof(ulong) || type == typeof(ulong?)
-                || type == typeof(nint) || type == typeof(nint?) || type == typeof(nuint) || type == typeof(nuint?)
-                || type == typeof(float) || type == typeof(float?) || type == typeof(double) || type == typeof(double?)
-                || type == typeof(decimal) || type == typeof(decimal?) || type == typeof(Guid) || type == typeof(Guid?)
+        public bool IsValid(Type type) => type.IsNumeric() || type == typeof(Guid) || type == typeof(Guid?)
                 || type == typeof(char) || type == typeof(char?) || type == typeof(byte) || type == typeof(byte?) || type == typeof(sbyte) || type == typeof(sbyte?)
                 || type == typeof(bool) || type == typeof(bool?) || type == typeof(string) || type == typeof(DateTime) || type == typeof(DateTime?) || type == typeof(TimeSpan)
                 || type == typeof(TimeSpan?) || type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?) || type.IsEnum;

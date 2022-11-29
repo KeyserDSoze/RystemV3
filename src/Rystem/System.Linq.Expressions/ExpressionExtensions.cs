@@ -96,5 +96,21 @@ namespace System.Linq.Expressions
                 return default;
             return (TResult)value;
         }
+        public static PropertyInfo? GetPropertyFromExpression<Tx, Ty>(this Expression<Func<Tx, Ty>> lambda)
+        {
+            MemberExpression? expression = null;
+            if (lambda.Body is UnaryExpression unary)
+            {
+                if (unary.Operand is MemberExpression member)
+                {
+                    expression = member;
+                }
+            }
+            else if (lambda.Body is MemberExpression member)
+            {
+                expression = member;
+            }
+            return expression?.Member as PropertyInfo;
+        }
     }
 }

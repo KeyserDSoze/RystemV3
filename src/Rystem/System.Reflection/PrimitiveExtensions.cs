@@ -6,6 +6,7 @@
             typeof(string),
             typeof(decimal),
             typeof(DateTime),
+            typeof(DateOnly),
             typeof(DateTimeOffset),
             typeof(TimeSpan),
             typeof(Guid)

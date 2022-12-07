@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Reflection;
+using System.Text.Json;
 
 namespace Rystem.System
 {
@@ -10,6 +11,18 @@ namespace Rystem.System
                 return default;
             else
                 return source.ToJson().FromJson<T>();
+        }
+        public static void CopyPropertiesFrom<T>(this T? destination, T? source)
+        {
+            if (source == null)
+                source = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+            if (destination == null)
+                destination = typeof(T).CreateWithDefaultConstructorPropertiesAndField<T>();
+            foreach (var property in typeof(T).FetchProperties())
+            {
+                if (property.SetMethod != null)
+                    property.SetValue(destination, property.GetValue(source));
+            }
         }
     }
 }

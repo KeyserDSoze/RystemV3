@@ -19,6 +19,17 @@ namespace System
             else
                 return source.ToJson().FromJson(source.GetType());
         }
+        public static void CopyPropertiesFrom(this object destination, object? source)
+        {
+            Type type = destination.GetType();
+            if (source == null)
+                source = type.CreateWithDefaultConstructorPropertiesAndField();
+            foreach (var property in type.FetchProperties())
+            {
+                if (property.SetMethod != null)
+                    property.SetValue(destination, property.GetValue(source));
+            }
+        }
         public static void CopyPropertiesFrom<T>(this T? destination, T? source)
         {
             if (source == null)

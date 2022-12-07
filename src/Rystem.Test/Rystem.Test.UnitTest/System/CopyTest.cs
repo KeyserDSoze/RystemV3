@@ -33,11 +33,15 @@ namespace Rystem.Test.UnitTest
             Assert.False(a == b);
             Assert.True(a.Id == b.Id);
             B c = new B();
+            object e = new B();
             B d = c;
             c.CopyPropertiesFrom(b);
             Assert.True(c == d);
             Assert.Equal(b.Id, c.Id);
             Assert.Equal(b.Id, d.Id);
+            e.CopyPropertiesFrom(d);
+            Assert.Equal(b.Id, ((dynamic)e).Id);
+            Assert.True(c == d);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json;
 
-namespace Rystem.System
+namespace System
 {
     public static class CopyExtensions
     {
@@ -11,6 +11,13 @@ namespace Rystem.System
                 return default;
             else
                 return source.ToJson().FromJson<T>();
+        }
+        public static object? ToDeepCopy(this object? source)
+        {
+            if (source == null)
+                return default;
+            else
+                return source.ToJson().FromJson(source.GetType());
         }
         public static void CopyPropertiesFrom<T>(this T? destination, T? source)
         {

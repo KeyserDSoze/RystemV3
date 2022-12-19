@@ -28,13 +28,21 @@ namespace Rystem.Test.UnitTest.Enumerable
             enumerable.SetElementAt(10, new Something { A = "set" });
             value = enumerable.ElementAt(10)!;
             Assert.Equal("set", value.A);
-            
+            Assert.True(enumerable.RemoveElementAt(10, out enumerable, out value));
+            Assert.Equal("set", value.A);
+            value = enumerable.ElementAt(10)!;
+            Assert.Equal("11", value.A);
+
             enumerable = arrays;
             value = enumerable.ElementAt(10);
             Assert.Equal(10, value);
             enumerable.SetElementAt(10, 12_000);
             value = enumerable.ElementAt(10);
             Assert.Equal(12_000, value);
+            Assert.True(enumerable.RemoveElementAt(10, out enumerable, out value));
+            Assert.Equal(12_000, value);
+            value = enumerable.ElementAt(10)!;
+            Assert.Equal(11, value);
         }
     }
 }

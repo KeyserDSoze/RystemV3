@@ -1,22 +1,22 @@
 ﻿using System.Reflection;
 
-namespace System.Text.Csv
+namespace System.Text.Minimization
 {
-    internal class ObjectSerializer : ICsvInterpreter
+    internal class ObjectSerializer : IMinimizationInterpreter
     {
         public int Priority => 0;
-        private static readonly Type Ignore = typeof(CsvIgnore);
+        private static readonly Type Ignore = typeof(MinimizationIgnore);
         public bool IsValid(Type type) => !type.IsInterface && !type.IsAbstract;
         private static readonly Dictionary<string, PropertyInfo[]> Properties = new();
         private static readonly object Semaphore = new();
-        private static readonly Type CsvProperty = typeof(CsvPropertyAttribute);
+        private static readonly Type CsvProperty = typeof(MinimizationPropertyAttribute);
         private static PropertyInfo[] GetOrderedProperties(Type type)
         {
             if (!Properties.ContainsKey(type.FullName!))
                 lock (Semaphore)
                     if (!Properties.ContainsKey(type.FullName!))
                         Properties.Add(type.FullName!, type.FetchProperties(Ignore)
-                            .OrderBy(x => (x.GetCustomAttribute(CsvProperty) as CsvPropertyAttribute)?.Column ?? int.MaxValue)
+                            .OrderBy(x => (x.GetCustomAttribute(CsvProperty) as MinimizationPropertyAttribute)?.Column ?? int.MaxValue)
                             .ToArray());
             return Properties[type.FullName!];
         }

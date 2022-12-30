@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text.Csv;
 using System.Text.Json;
+using System.Text.Minimization;
 using Xunit;
 
 namespace Rystem.Test.UnitTest.Csv
 {
-    public class CsvTest
+    public class MinimizationTest
     {
         internal sealed class CsvModel
         {
@@ -24,7 +25,7 @@ namespace Rystem.Test.UnitTest.Csv
             public int Y { get; set; }
         }
         private static readonly List<CsvModel> _models = new();
-        static CsvTest()
+        static MinimizationTest()
         {
             for (int i = 0; i < 100; i++)
             {
@@ -46,7 +47,7 @@ namespace Rystem.Test.UnitTest.Csv
                 {
                     inners.Add(new CsvInnerModel
                     {
-                        X = $"d,{x}ccc,",
+                        X = x.ToString(),
                         Y = x
                     });
                 }
@@ -54,10 +55,20 @@ namespace Rystem.Test.UnitTest.Csv
             }
         }
         [Fact]
-        public void Test()
+        public void Test1()
         {
-            var value = _models.ToCsv();
-            Assert.NotEmpty(value);
+            var value = _models.ToMinimize(';');
+            Assert.True(value.Length < _models.ToJson().Length);
+            var models2 = value.FromMinimization<List<CsvModel>>(';');
+            Assert.Equal(_models.Count, models2.Count);
+        }
+        [Fact]
+        public void Test2()
+        {
+            var value = _models.ToMinimize();
+            Assert.True(value.Length < _models.ToJson().Length);
+            var models2 = value.FromMinimization<List<CsvModel>>();
+            Assert.Equal(_models.Count, models2.Count);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace System.Text.Csv
+namespace System.Text.Minimization
 {
-    internal class DictionarySerializer : ICsvInterpreter
+    internal class DictionarySerializer : IMinimizationInterpreter
     {
         public int Priority => 5;
         public bool IsValid(Type type)

@@ -1,11 +1,11 @@
-﻿namespace System.Text.Csv
+﻿namespace System.Text.Minimization
 {
-    public static class CsvConvertExtensions
+    public static class MinimizationConvertExtensions
     {
-        public static string ToCsv<T>(this T data, char? startSeparator = null) 
+        public static string ToMinimize<T>(this T data, char? startSeparator = null) 
             => Serializer.Instance.Serialize(data!.GetType(), data, startSeparator == null ? int.MaxValue : (int)startSeparator);
 
-        public static T FromCsv<T>(this string value, char? startSeparator = null) 
+        public static T FromMinimization<T>(this string value, char? startSeparator = null) 
             => (T)Serializer.Instance.Deserialize(typeof(T), value, startSeparator == null ? int.MaxValue : (int)startSeparator);
     }
 }

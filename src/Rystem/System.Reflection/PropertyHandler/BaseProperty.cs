@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Linq.Dynamic.Core;
+using System.Text;
 
 namespace System.Reflection
 {
@@ -56,7 +57,7 @@ namespace System.Reflection
             foreach (var item in _valueFromContextStack)
             {
                 context = item.GetValue(context);
-                if (indexes != null && context is not string && context is IEnumerable enumerable)
+                if (indexes != null && counter < indexes.Length && context is not string && context is IEnumerable enumerable)
                 {
                     context = enumerable.ElementAt(indexes[counter]);
                     counter++;
@@ -65,6 +66,29 @@ namespace System.Reflection
                     return null;
             }
             return context;
+        }
+        public (string Name, object? Value) NamedValue(object? context, int[]? indexes)
+        {
+            StringBuilder stringBuilder = new();
+            if (context == null)
+                return (stringBuilder.ToString(), null);
+            int counter = 0;
+            foreach (var item in _valueFromContextStack)
+            {
+                context = item.GetValue(context);
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Append('.');
+                stringBuilder.Append(item.Name);
+                if (indexes != null && counter < indexes.Length && context is not string && context is IEnumerable enumerable)
+                {
+                    stringBuilder.Append($"[{indexes[counter]}]");
+                    context = enumerable.ElementAt(indexes[counter]);
+                    counter++;
+                }
+                if (context == null)
+                    return (stringBuilder.ToString(), null);
+            }
+            return (stringBuilder.ToString(), context);
         }
         public void Set(object? context, object? value)
         {

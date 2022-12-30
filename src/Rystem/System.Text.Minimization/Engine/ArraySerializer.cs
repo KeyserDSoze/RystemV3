@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace System.Text.Csv
+namespace System.Text.Minimization
 {
-    internal class ArraySerializer : ICsvInterpreter
+    internal class ArraySerializer : IMinimizationInterpreter
     {
         public int Priority => 1;
 

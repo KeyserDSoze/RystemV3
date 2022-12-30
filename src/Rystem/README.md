@@ -164,14 +164,20 @@ A simple method to make uppercase the first character.
     var olfa2 = olfa.ToUpperCaseFirst();
 
 ### Character separated-value (CSV)
-It's a brand new idea to serialize any kind of objects (with lesser occupied space of json), the idea comes from Command separated-value standard.
-To serialize
+Transform any kind of IEnumerable data in a CSV string.
 
     string value = _models.ToCsv();
 
+
+### Minimization of a model (based on CSV concept)
+It's a brand new idea to serialize any kind of objects (with lesser occupied space of json), the idea comes from Command separated-value standard.
+To serialize
+
+    string value = _models.ToMinimize();
+
 To deserialize (for instance in a List of a class named CsvModel)
 
-    value.FromCsv<List<CsvModel>>();
+    value.FromMinimization<List<CsvModel>>();
 
 ### Extensions for json
 I don't know if you are fed up to write JsonSerializer.Serialize, I do, and so, you may use the extension method to serialize faster.

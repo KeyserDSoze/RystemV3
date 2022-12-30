@@ -1,6 +1,6 @@
-﻿namespace System.Text.Csv
+﻿namespace System.Text.Minimization
 {
-    internal interface ICsvInterpreter
+    internal interface IMinimizationInterpreter
     {
         string Serialize(Type type, object value, int deep);
         dynamic Deserialize(Type type, string value, int deep);

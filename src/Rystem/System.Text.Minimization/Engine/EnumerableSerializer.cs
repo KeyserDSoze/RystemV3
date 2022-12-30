@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 
-namespace System.Text.Csv
+namespace System.Text.Minimization
 {
-    internal class EnumerableSerializer : ICsvInterpreter
+    internal class EnumerableSerializer : IMinimizationInterpreter
     {
         public int Priority => 4;
         public bool IsValid(Type type)

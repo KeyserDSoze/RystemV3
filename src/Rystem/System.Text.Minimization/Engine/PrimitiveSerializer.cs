@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Reflection;
 
-namespace System.Text.Csv
+namespace System.Text.Minimization
 {
-    internal class PrimitiveSerializer : ICsvInterpreter
+    internal class PrimitiveSerializer : IMinimizationInterpreter
     {
         public int Priority => 6;
         public bool IsValid(Type type) => type.IsNumeric() || type == typeof(Guid) || type == typeof(Guid?)

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Csv;
 using System.Text.Json;
 using System.Text.Minimization;
 using Xunit;
 
-namespace Rystem.Test.UnitTest.Csv
+namespace Rystem.Test.UnitTest.Minimization
 {
     public class MinimizationTest
     {

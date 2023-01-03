@@ -4,6 +4,30 @@ using System.Text;
 
 namespace System.Reflection
 {
+    public sealed class BasePropertyNameValue
+    {
+        private readonly StringBuilder _navigationPathBuilder = new();
+        public string NavigationPath { get; private set; } = string.Empty;
+        public string CompleteName => $"{_navigationPathBuilder}{(_index != -1 ? $"[{_index}]" : string.Empty)}.{Name}";
+        public string? Name { get; private set; }
+        public object? Value { get; set; }
+        private int _index = -1;
+        public void AddName(string name)
+        {
+            if (_navigationPathBuilder.Length > 0)
+                _navigationPathBuilder.Append('.');
+            _navigationPathBuilder.Append(Name ?? string.Empty);
+            Name = name;
+            NavigationPath = _navigationPathBuilder.ToString();
+        }
+        public void AddIndex(int index)
+        {
+            if (_index != -1)
+                _navigationPathBuilder.Append($"[{_index}]");
+            _index = index;
+            //Name = $"{Name}[{index}]";
+        }
+    }
     public abstract class BaseProperty
     {
         public BaseProperty? Father { get; }
@@ -67,28 +91,27 @@ namespace System.Reflection
             }
             return context;
         }
-        public (string Name, object? Value) NamedValue(object? context, int[]? indexes)
+        public BasePropertyNameValue NamedValue(object? context, int[]? indexes)
         {
-            StringBuilder stringBuilder = new();
+            BasePropertyNameValue basePropertyNameValue = new();
             if (context == null)
-                return (stringBuilder.ToString(), null);
+                return basePropertyNameValue;
             int counter = 0;
             foreach (var item in _valueFromContextStack)
             {
                 context = item.GetValue(context);
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Append('.');
-                stringBuilder.Append(item.Name);
+                basePropertyNameValue.AddName(item.Name);
                 if (indexes != null && counter < indexes.Length && context is not string && context is IEnumerable enumerable)
                 {
-                    stringBuilder.Append($"[{indexes[counter]}]");
+                    basePropertyNameValue.AddIndex(indexes[counter]);
                     context = enumerable.ElementAt(indexes[counter]);
                     counter++;
                 }
                 if (context == null)
-                    return (stringBuilder.ToString(), null);
+                    return basePropertyNameValue;
             }
-            return (stringBuilder.ToString(), context);
+            basePropertyNameValue.Value = context;
+            return basePropertyNameValue;
         }
         public void Set(object? context, object? value)
         {

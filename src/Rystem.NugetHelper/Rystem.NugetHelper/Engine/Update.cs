@@ -45,8 +45,17 @@
             "Rystem.RepositoryFramework.Infrastructure.MsSql", "RepositoryFramework.Web.Components")
             .CreateSon()
             .AddProject("Rystem.RepositoryFramework.Cache.Azure.Storage.Blob");
+
+            OnlyRystemTree = new Update()
+            .AddProject("Rystem.Concurrency");
+            OnlyRystemTree
+            .CreateSon()
+            .AddProject("Rystem.BackgroundJob")
+            .CreateSon()
+            .AddProject("Rystem.Queue");
         }
         public static Update UpdateTree { get; }
         public static Update OnlyRepositoryTree { get; }
+        public static Update OnlyRystemTree { get; }
     }
 }

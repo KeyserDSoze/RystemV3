@@ -7,16 +7,7 @@ namespace System.Text.Csv
 {
     internal sealed class CsvEngine
     {
-        private sealed class ColumnKeeper
-        {
-            public string Key { get; set; }
-            public string Value { get; set; }
-        }
-        private sealed class RowKeeper
-        {
-            public List<RowHandler> Columns { get; set; }
-        }
-        private sealed class TableKeeper
+        private sealed class TableHandler
         {
             public Dictionary<string, RowHandler> Map { get; set; }
             public void Add(int valueIndex, BasePropertyNameValue basePropertyNameValue)
@@ -55,7 +46,7 @@ namespace System.Text.Csv
         public static string Convert<T>(IEnumerable<T> values)
         {
             var showcase = typeof(T).ToShowcase();
-            var tableKeeper = new TableKeeper() { Map = new() };
+            var tableHandler = new TableHandler() { Map = new() };
             int counter = 0;
             foreach (var value in values)
             {
@@ -69,7 +60,7 @@ namespace System.Text.Csv
                         if (property.Type == PropertyType.Primitive)
                         {
                             var entry = property.NamedValue(value, indexes);
-                            tableKeeper.Add(counter, entry);
+                            tableHandler.Add(counter, entry);
                         }
                         else if (property.Type == PropertyType.Complex)
                         {
@@ -95,7 +86,7 @@ namespace System.Text.Csv
                 }
             }
             StringBuilder header = new();
-            foreach (var map in tableKeeper.Map)
+            foreach (var map in tableHandler.Map)
             {
                 if (map.Value.Max < 2)
                 {
@@ -115,7 +106,7 @@ namespace System.Text.Csv
                 }
             }
             StringBuilder[] rows = new StringBuilder[counter];
-            foreach (var map in tableKeeper.Map)
+            foreach (var map in tableHandler.Map)
             {
                 int internalCounter = 0;
                 foreach (var row in map.Value.Rows)

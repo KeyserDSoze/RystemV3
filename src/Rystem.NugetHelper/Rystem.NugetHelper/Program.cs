@@ -22,11 +22,11 @@ namespace Rystem.Nuget
             string path = @$"{Repo.Split(Directory.GetCurrentDirectory()).First()}\repos";
             List<string> projectNames = new() { "RepositoryFramework", "RystemV3", "Rystem.Concurrency", "Rystem.BackgroundJob", "Rystem.Queue" };
             var rystemDirectories = new DirectoryInfo(path).GetDirectories().Where(x => projectNames.Contains(x.Name)).ToList();
-            Console.WriteLine("Only repository (1) or everything (something else) with (2) you choose every turn if go ahead or not, With (3) go in debug.");
+            Console.WriteLine("Only repository (1) or only Rystem (2) or everything (something else) with (3) you choose every turn if go ahead or not, With (4) go in debug.");
             var line = Console.ReadLine();
-            Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : UpdateConfiguration.UpdateTree;
-            bool checkIfGoAhead = line == "2";
-            bool isDebug = line == "3";
+            Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : (line == "2" ? UpdateConfiguration.OnlyRystemTree : UpdateConfiguration.UpdateTree);
+            bool checkIfGoAhead = line == "3";
+            bool isDebug = line == "4";
             while (currentUpdateTree != null)
             {
                 var context = new LibraryContext("0.0.0");

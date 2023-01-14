@@ -68,7 +68,7 @@ namespace Rystem.Test.UnitTest.Reflection
             public int? B { get; set; }
         }
         [Fact]
-        public void Test1()
+        public void Randomize()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddPopulationService();

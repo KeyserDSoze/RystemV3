@@ -7,7 +7,6 @@ namespace System.Population.Random
 {
     public interface IPopulationBuilder<T>
     {
-        IServiceCollection Services { get; }
         IPopulationBuilder<T> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex);
         IPopulationBuilder<T> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements);
         IPopulationBuilder<T> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator);

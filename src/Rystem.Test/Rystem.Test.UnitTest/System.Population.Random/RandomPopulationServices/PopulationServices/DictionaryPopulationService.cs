@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace System.Population.Random
 {
@@ -6,7 +8,7 @@ namespace System.Population.Random
     {
         public int Priority => 3;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
         {
             var keyType = options.Type.GetGenericArguments().First();
             var valueType = options.Type.GetGenericArguments().Last();
@@ -14,9 +16,9 @@ namespace System.Population.Random
             var entity = Activator.CreateInstance(dictionaryType)! as IDictionary;
             for (var i = 0; i < options.NumberOfEntities; i++)
             {
-                var newKey = options.PopulationService.Construct(options.Type.GetGenericArguments().First(),
+                var newKey = options.PopulationService.Construct(settings, options.Type.GetGenericArguments().First(),
                     options.NumberOfEntities, options.TreeName, "Key");
-                var newValue = options.PopulationService.Construct(options.Type.GetGenericArguments().Last(),
+                var newValue = options.PopulationService.Construct(settings, options.Type.GetGenericArguments().Last(),
                     options.NumberOfEntities, options.TreeName, "Value");
                 entity!.Add(newKey, newValue);
             }

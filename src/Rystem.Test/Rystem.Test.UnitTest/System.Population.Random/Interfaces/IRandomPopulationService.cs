@@ -9,6 +9,6 @@ namespace System.Population.Random
     {
         int Priority { get; }
         bool IsValid(Type type);
-        dynamic GetValue(RandomPopulationOptions options);
+        dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options);
     }
 }

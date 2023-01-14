@@ -5,7 +5,7 @@ namespace System.Population.Random
     internal class RangePopulationService : IRandomPopulationService
     {
         public int Priority => 1;
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
         {
             var firstNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));
             var secondNumber = BitConverter.ToInt32(RandomNumberGenerator.GetBytes(4));

@@ -6,11 +6,11 @@ namespace System.Population.Random
     {
         public int Priority => 0;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
         {
             try
             {
-                return options.PopulationService.Construct(options.Type.Mock()!,
+                return options.PopulationService.Construct(settings, options.Type.Mock()!,
                     options.NumberOfEntities, options.TreeName, string.Empty)!;
             }
             catch

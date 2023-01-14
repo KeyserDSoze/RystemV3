@@ -4,7 +4,7 @@
     {
         public int Priority => 1;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
             => Guid.NewGuid();
 
         public bool IsValid(Type type)

@@ -5,6 +5,6 @@
     /// </summary>
     public interface IInstanceCreator
     {
-        object? CreateInstance(RandomPopulationOptions options, object?[]? args = null);
+        object? CreateInstance(PopulationSettings settings, RandomPopulationOptions options, object?[]? args = null);
     }
 }

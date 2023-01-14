@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 
 namespace System.Population.Random
 {
-    public sealed class PopulationSettings<T>
+    public class PopulationSettings
     {
-        public static PopulationSettings<T> Default { get; } = new();
         public Dictionary<string, string[]> RegexForValueCreation { get; set; } = new();
         public Dictionary<string, Func<dynamic>> DelegatedMethodForValueCreation { get; set; } = new();
         public Dictionary<string, Func<IServiceProvider, Task<dynamic>>> DelegatedMethodForValueRetrieving { get; set; } = new();

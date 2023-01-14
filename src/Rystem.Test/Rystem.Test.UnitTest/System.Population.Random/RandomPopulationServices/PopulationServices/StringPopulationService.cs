@@ -4,7 +4,7 @@
     {
         public int Priority => 4;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
             => $"{options.TreeName}_{Guid.NewGuid()}";
 
         public bool IsValid(Type type)

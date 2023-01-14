@@ -10,7 +10,6 @@ namespace System.Population.Random
         private readonly IEnumerable<IRandomPopulationService> _randomPopulationServices;
         private readonly IRegexService _regexService;
         public IInstanceCreator InstanceCreator { get; }
-        public PopulationSettings Settings { get; set; } = null!;
         public PopulationService(
             IServiceProvider serviceProvider,
             IEnumerable<IRandomPopulationService> randomPopulationServices,
@@ -23,7 +22,7 @@ namespace System.Population.Random
             InstanceCreator = instanceCreator;
         }
 
-        public dynamic? Construct(Type type, int numberOfEntities, string treeName, string name)
+        public dynamic? Construct(PopulationSettings settings, Type type, int numberOfEntities, string treeName, string name)
         {
             if (!string.IsNullOrWhiteSpace(treeName) && !string.IsNullOrWhiteSpace(name))
                 treeName = $"{treeName}.{name}";
@@ -31,39 +30,39 @@ namespace System.Population.Random
                 treeName = name;
 
             int? overridedNumberOfEntities = null;
-            var numberOfEntitiesDictionary = Settings.NumberOfElements;
+            var numberOfEntitiesDictionary = settings.NumberOfElements;
             if (numberOfEntitiesDictionary.ContainsKey(treeName))
                 overridedNumberOfEntities = numberOfEntitiesDictionary[treeName];
             numberOfEntities = overridedNumberOfEntities ?? numberOfEntities;
 
-            if (Settings.DelegatedMethodForValueCreation.ContainsKey(treeName))
-                return Settings.DelegatedMethodForValueCreation[treeName].Invoke();
+            if (settings.DelegatedMethodForValueCreation.ContainsKey(treeName))
+                return settings.DelegatedMethodForValueCreation[treeName].Invoke();
 
-            if (Settings.DelegatedMethodForValueRetrieving.ContainsKey(treeName))
-                return Settings.DelegatedMethodForValueRetrieving[treeName].Invoke(_serviceProvider).ToResult();
+            if (settings.DelegatedMethodForValueRetrieving.ContainsKey(treeName))
+                return settings.DelegatedMethodForValueRetrieving[treeName].Invoke(_serviceProvider).ToResult();
 
-            if (Settings.DelegatedMethodWithRandomForValueRetrieving.ContainsKey(treeName))
+            if (settings.DelegatedMethodWithRandomForValueRetrieving.ContainsKey(treeName))
             {
-                var entities = Settings.DelegatedMethodWithRandomForValueRetrieving[treeName].Invoke(_serviceProvider).ToResult();
+                var entities = settings.DelegatedMethodWithRandomForValueRetrieving[treeName].Invoke(_serviceProvider).ToResult();
                 var count = entities.Count() - numberOfEntities;
                 var index = System.Random.Shared.Next(0, count);
                 return entities.Skip(index).Take(numberOfEntities);
             }
 
-            if (Settings.RegexForValueCreation.ContainsKey(treeName))
+            if (settings.RegexForValueCreation.ContainsKey(treeName))
                 return _regexService.GetRandomValue(type,
-                    Settings.RegexForValueCreation[treeName]);
+                    settings.RegexForValueCreation[treeName]);
 
-            if (Settings.AutoIncrementations.ContainsKey(treeName))
-                return Settings.AutoIncrementations[treeName]++;
+            if (settings.AutoIncrementations.ContainsKey(treeName))
+                return settings.AutoIncrementations[treeName]++;
 
-            if (Settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(name))
-                return Construct(Settings.ImplementationForValueCreation[treeName], numberOfEntities,
+            if (settings.ImplementationForValueCreation.ContainsKey(treeName) && !string.IsNullOrWhiteSpace(name))
+                return Construct(settings, settings.ImplementationForValueCreation[treeName], numberOfEntities,
                     treeName, string.Empty);
 
             var service = _randomPopulationServices.OrderByDescending(x => x.Priority).FirstOrDefault(x => x.IsValid(type));
             if (service != default)
-                return service.GetValue(new RandomPopulationOptions(type, this, numberOfEntities, treeName));
+                return service.GetValue(settings, new RandomPopulationOptions(type, this, numberOfEntities, treeName));
             return default;
         }
     }

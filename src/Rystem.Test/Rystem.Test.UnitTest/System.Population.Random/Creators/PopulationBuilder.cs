@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -11,7 +10,7 @@ namespace System.Population.Random
         private readonly IPopulationStrategy<T> _populationStrategy;
         private readonly int _numberOfElements;
         private readonly int _numberOfElementsWhenEnumerableIsFound;
-        private readonly PopulationSettings<T> _settings;
+        private readonly PopulationSettings<T> _settings = new();
         public PopulationBuilder(IPopulationStrategy<T> populationStrategy, int numberOfElements, int numberOfElementsWhenEnumerableIsFound)
         {
             _populationStrategy = populationStrategy;
@@ -25,7 +24,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithPattern<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, params string[] regex)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.RegexForValueCreation;
+            var dictionary = _settings.RegexForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = regex;
             else
@@ -35,7 +34,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithSpecificNumberOfElements<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, int numberOfElements)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.NumberOfElements;
+            var dictionary = _settings.NumberOfElements;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = numberOfElements;
             else
@@ -45,7 +44,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<TProperty> creator)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.DelegatedMethodForValueCreation;
+            var dictionary = _settings.DelegatedMethodForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = () => creator.Invoke()!;
             else
@@ -55,7 +54,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithValue<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Func<IServiceProvider, Task<TProperty>> valueRetriever)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.DelegatedMethodForValueRetrieving;
+            var dictionary = _settings.DelegatedMethodForValueRetrieving;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = async (x) => (await valueRetriever.Invoke(x).NoContext())!;
             else
@@ -66,7 +65,7 @@ namespace System.Population.Random
             Func<IServiceProvider, Task<IEnumerable<TProperty>>> valuesRetriever)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.DelegatedMethodWithRandomForValueRetrieving;
+            var dictionary = _settings.DelegatedMethodWithRandomForValueRetrieving;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!;
             else
@@ -77,7 +76,7 @@ namespace System.Population.Random
            Func<IServiceProvider, Task<IEnumerable<TProperty>>> valuesRetriever)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.DelegatedMethodWithRandomForValueRetrieving;
+            var dictionary = _settings.DelegatedMethodWithRandomForValueRetrieving;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = async (x) => (await valuesRetriever.Invoke(x).NoContext()!).Select(x => (object)x!)!;
             else
@@ -87,7 +86,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithAutoIncrement<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, TProperty start)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.AutoIncrementations;
+            var dictionary = _settings.AutoIncrementations;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = start!;
             else
@@ -97,7 +96,7 @@ namespace System.Population.Random
         public IPopulationBuilder<T> WithImplementation<TProperty>(Expression<Func<T, TProperty>> navigationPropertyPath, Type implementationType)
         {
             var nameOfProperty = GetNameOfProperty(navigationPropertyPath);
-            var dictionary = _internalBehaviorSettings.ImplementationForValueCreation;
+            var dictionary = _settings.ImplementationForValueCreation;
             if (dictionary.ContainsKey(nameOfProperty))
                 dictionary[nameOfProperty] = implementationType;
             else

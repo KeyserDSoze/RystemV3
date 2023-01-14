@@ -6,7 +6,7 @@ namespace System.Population.Random
     {
         public int Priority => 1;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
             => (char)RandomNumberGenerator.GetInt32(256);
 
         public bool IsValid(Type type)

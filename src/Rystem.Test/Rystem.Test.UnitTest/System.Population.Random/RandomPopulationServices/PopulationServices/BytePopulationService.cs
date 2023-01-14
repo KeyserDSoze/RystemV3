@@ -6,7 +6,7 @@ namespace System.Population.Random
     {
         public int Priority => 1;
 
-        public dynamic GetValue(RandomPopulationOptions options)
+        public dynamic GetValue(PopulationSettings settings, RandomPopulationOptions options)
         {
             if (options.Type == typeof(byte) || options.Type == typeof(byte?))
                 return RandomNumberGenerator.GetBytes(1)[0];

@@ -1,4 +1,5 @@
 ﻿using Fare;
+using System.Linq;
 
 namespace System.Population.Random
 {

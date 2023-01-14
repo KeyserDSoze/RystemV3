@@ -16,27 +16,21 @@ namespace Microsoft.Extensions.DependencyInjection.Extensions
             services.AddSingleton<IPopulationService, PopulationService>();
             services.AddSingleton<IInstanceCreator, InstanceCreator>();
             services.AddSingleton<IRegexService, RegexService>();
-            PopulationServiceSelector.Instance.TryAdd(new AbstractPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new ArrayPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new BoolPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new BytePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new CharPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new ObjectPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new DictionaryPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new EnumerablePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new GuidPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new NumberPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new RangePopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new StringPopulationService());
-            PopulationServiceSelector.Instance.TryAdd(new TimePopulationService());
-            services.AddSingleton(PopulationServiceSelector.Instance);
+            services.AddSingleton<IRandomPopulationService, AbstractPopulationService>();
+            services.AddSingleton<IRandomPopulationService, ArrayPopulationService>();
+            services.AddSingleton<IRandomPopulationService, BoolPopulationService>();
+            services.AddSingleton<IRandomPopulationService, BytePopulationService>();
+            services.AddSingleton<IRandomPopulationService, CharPopulationService>();
+            services.AddSingleton<IRandomPopulationService, ObjectPopulationService>();
+            services.AddSingleton<IRandomPopulationService, DictionaryPopulationService>();
+            services.AddSingleton<IRandomPopulationService, EnumerablePopulationService>();
+            services.AddSingleton<IRandomPopulationService, GuidPopulationService>();
+            services.AddSingleton<IRandomPopulationService, NumberPopulationService>();
+            services.AddSingleton<IRandomPopulationService, RangePopulationService>();
+            services.AddSingleton<IRandomPopulationService, StringPopulationService>();
+            services.AddSingleton<IRandomPopulationService, TimePopulationService>();
             services.TryAddSingleton(typeof(IPopulationStrategy<>), typeof(RandomPopulationStrategy<>));
             services.TryAddSingleton(typeof(IPopulation<>), typeof(RandomPopulation<>));
-            _ = services.AddSingleton(
-                new PopulationServiceSettings
-                {
-                    BehaviorSettings = new(),
-                });
             return services;
         }
         /// <summary>
@@ -68,12 +62,9 @@ namespace Microsoft.Extensions.DependencyInjection.Extensions
         /// <returns>IServiceCollection</returns>
         public static IServiceCollection AddPopulationSettings<T>(
           this IServiceCollection services,
-          Action<PopulationServiceSettings<T>>? settings)
+          Action<PopulationSettings<T>>? settings)
         {
-            var defaultSettings = new PopulationServiceSettings<T>
-            {
-                BehaviorSettings = new(),
-            };
+            var defaultSettings = new PopulationSettings<T>();
             settings?.Invoke(defaultSettings);
             return services.AddSingleton(defaultSettings);
         }
@@ -116,11 +107,10 @@ namespace Microsoft.Extensions.DependencyInjection.Extensions
         /// </summary>
         /// <param name="services">IServiceCollection</param>
         /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddRandomPopulationService(this IServiceCollection services,
-            IRandomPopulationService service)
+        public static IServiceCollection AddRandomPopulationService<TRandomPopulationService>(this IServiceCollection services)
+            where TRandomPopulationService : class, IRandomPopulationService
         {
-            PopulationServiceSelector.Instance.TryAdd(service);
-            services.AddSingleton(PopulationServiceSelector.Instance);
+            services.AddSingleton<IRandomPopulationService, TRandomPopulationService>();
             return services;
         }
     }

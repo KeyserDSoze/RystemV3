@@ -9,7 +9,9 @@ namespace System.Population.Random
         {
             _strategy = strategy;
         }
-        public List<T> Populate(int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10) 
-            => _strategy.Populate(numberOfElements, numberOfElementsWhenEnumerableIsFound);
+        public IPopulationBuilder<T> Populate(int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+            => new PopulationBuilder<T>(_strategy, numberOfElements, numberOfElementsWhenEnumerableIsFound);
+        public List<T> PopulateWithDefault(int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+            => _strategy.Populate(PopulationSettings<T>.Default, numberOfElements, numberOfElementsWhenEnumerableIsFound);
     }
 }

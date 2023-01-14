@@ -1,4 +1,7 @@
-﻿namespace System.Population.Random
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace System.Population.Random
 {
     public class InstanceCreator : IInstanceCreator
     {

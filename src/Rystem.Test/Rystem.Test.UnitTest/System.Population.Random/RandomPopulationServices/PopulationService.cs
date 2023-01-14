@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,18 +7,18 @@ namespace System.Population.Random
     internal class PopulationService : IPopulationService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly PopulationServiceSelector _selector;
+        private readonly IEnumerable<IRandomPopulationService> _randomPopulationServices;
         private readonly IRegexService _regexService;
         public IInstanceCreator InstanceCreator { get; }
-        public CreationSettings Settings { get; set; } = null!;
+        public PopulationSettings Settings { get; set; } = null!;
         public PopulationService(
             IServiceProvider serviceProvider,
-            PopulationServiceSelector selector,
+            IEnumerable<IRandomPopulationService> randomPopulationServices,
             IRegexService regexService,
             IInstanceCreator instanceCreator)
         {
             _serviceProvider = serviceProvider;
-            _selector = selector;
+            _randomPopulationServices = randomPopulationServices;
             _regexService = regexService;
             InstanceCreator = instanceCreator;
         }
@@ -61,7 +61,7 @@ namespace System.Population.Random
                 return Construct(Settings.ImplementationForValueCreation[treeName], numberOfEntities,
                     treeName, string.Empty);
 
-            var service = _selector.GetRightService(type);
+            var service = _randomPopulationServices.OrderByDescending(x => x.Priority).FirstOrDefault(x => x.IsValid(type));
             if (service != default)
                 return service.GetValue(new RandomPopulationOptions(type, this, numberOfEntities, treeName));
             return default;

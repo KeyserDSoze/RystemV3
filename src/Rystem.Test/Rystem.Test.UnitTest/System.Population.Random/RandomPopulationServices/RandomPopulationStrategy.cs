@@ -8,21 +8,17 @@ namespace System.Population.Random
     {
         private readonly IPopulationService _populationService;
         private readonly IInstanceCreator _instanceCreator;
-        private readonly PopulationServiceSettings _settings;
 
         public RandomPopulationStrategy(IPopulationService populationService,
-            IInstanceCreator instanceCreator,
-            PopulationServiceSettings defaultsettings,
-            PopulationServiceSettings<T>? settings = null)
+            IInstanceCreator instanceCreator)
         {
             _populationService = populationService;
             _instanceCreator = instanceCreator;
-            _settings = settings ?? defaultsettings;
         }
-        public List<T> Populate(int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
+        public List<T> Populate(PopulationSettings<T>? _settings = null, int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10)
         {
             List<T> items = new();
-            _populationService.Settings = _settings.BehaviorSettings ?? new();
+            _populationService.Settings = _settings ?? new();
             var properties = typeof(T).GetProperties();
             for (var i = 0; i < numberOfElements; i++)
             {

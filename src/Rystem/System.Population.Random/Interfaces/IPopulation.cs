@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace System.Population.Random
+﻿namespace System.Population.Random
 {
     public interface IPopulation<T>
     {

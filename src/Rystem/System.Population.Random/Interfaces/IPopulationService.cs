@@ -3,7 +3,7 @@
 namespace System.Population.Random
 {
     /// <summary>
-    /// Population service to allow the in memory population.
+    /// Population service.
     /// </summary>
     public interface IPopulationService
     {

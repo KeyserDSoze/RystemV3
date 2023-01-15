@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Population.Random;
 
-namespace Microsoft.Extensions.DependencyInjection.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static partial class ServiceCollectionExtensions
     {

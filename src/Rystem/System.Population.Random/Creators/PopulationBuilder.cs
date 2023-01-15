@@ -105,7 +105,7 @@ namespace System.Population.Random
         }
         public IPopulationBuilder<T> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
             => WithImplementation(navigationPropertyPath, typeof(TEntity));
-        public List<T> Execute() 
+        public List<T> Finalize() 
             => _populationStrategy.Populate(_settings, _numberOfElements, _numberOfElementsWhenEnumerableIsFound);
     }
 }

@@ -5,10 +5,11 @@ namespace System.Population.Random
     internal sealed class PopulationBuilder<T> : IPopulationBuilder<T>
     {
         private readonly IPopulationStrategy<T> _populationStrategy;
-        private readonly PopulationSettings<T> _settings = new();
-        public PopulationBuilder(IPopulationStrategy<T> populationStrategy)
+        private readonly PopulationSettings<T> _settings;
+        public PopulationBuilder(IPopulationStrategy<T> populationStrategy, PopulationSettings<T>? settings)
         {
             _populationStrategy = populationStrategy;
+            _settings = settings ?? new();
         }
         private const string LinqFirst = "First().";
 

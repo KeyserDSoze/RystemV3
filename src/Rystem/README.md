@@ -217,3 +217,22 @@ and after the build use the warm up
 
 	var app = builder.Build();
 	await app.Services.WarmUpAsync();
+
+
+## Population service
+You can use the population service to create a list of random value of a specific Type.
+An example from unit test explains how to use the service.
+
+    IServiceCollection services = new ServiceCollection();
+    services.AddPopulationService();
+    var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+    var populatedModel = serviceProvider.GetService<IPopulation<PopulationModelTest>>();
+    IPopulation<PopulationModelTest> allPrepopulation = populatedModel!
+        .Setup()
+        .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
+            .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
+            .WithImplementation(x => x.I, typeof(MyInnerInterfaceImplementation))
+            .WithPattern(x => x.I!.A!, "[a-z]{4,5}")
+            .WithPattern(x => x.II!.A!, "[a-z]{4,5}")
+            .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!);
+    var all = allPrepopulation.Populate();

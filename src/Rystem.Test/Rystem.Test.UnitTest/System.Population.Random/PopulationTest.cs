@@ -69,6 +69,20 @@ namespace Rystem.Test.UnitTest.Population
             public int? B { get; set; }
         }
         [Fact]
+        public void DoubleRandomize()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddPopulationService();
+            var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+            var populatedModel = serviceProvider.GetService<IPopulation<PopulationModelTest>>();
+            var allPrepopulation = populatedModel.Setup().WithAutoIncrement(x => x.A, 1);
+            List<PopulationModelTest> all = new();
+            for (int i = 0; i < 3; i++)
+                all.AddRange(allPrepopulation.Populate(50, 4));
+            Assert.Equal(150, all.Count);
+            Assert.Equal(150, all.Last().A);
+        }
+        [Fact]
         public void Randomize()
         {
             IServiceCollection services = new ServiceCollection();
@@ -76,14 +90,14 @@ namespace Rystem.Test.UnitTest.Population
             var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
             var populatedModel = serviceProvider.GetService<IPopulation<PopulationModelTest>>();
             var allPrepopulation = populatedModel!
-                .Populate()
+                .Setup()
                 .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                     .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
                     .WithImplementation(x => x.I, typeof(MyInnerInterfaceImplementation))
                     .WithPattern(x => x.I!.A!, "[a-z]{4,5}")
                     .WithPattern(x => x.II!.A!, "[a-z]{4,5}")
                     .WithImplementation<IInnerInterface, MyInnerInterfaceImplementation>(x => x.I!);
-            var all = allPrepopulation.Finalize();
+            var all = allPrepopulation.Populate();
             var theFirst = all.First();
             Assert.NotEqual(0, theFirst.A);
             Assert.NotNull(theFirst.AA);
@@ -156,7 +170,7 @@ namespace Rystem.Test.UnitTest.Population
             var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
             var populatedModel = serviceProvider.GetService<IPopulation<DelegationPopulation>>();
             var allPrepopulation = populatedModel!
-                .Populate(90, 8)
+                .Setup()
                         .WithAutoIncrement(x => x.Id, 0)
                         .WithPattern(x => x.A, "[1-9]{1,2}")
                         .WithPattern(x => x.AA, "[1-9]{1,2}")
@@ -200,7 +214,7 @@ namespace Rystem.Test.UnitTest.Population
                         .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
                         .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}");
 
-            var all = allPrepopulation.Finalize();
+            var all = allPrepopulation.Populate(90, 8);
             var theFirst = all.First()!;
             Assert.Equal(90, all.Count);
             Assert.Equal(0, all.First().Id);
@@ -272,7 +286,7 @@ namespace Rystem.Test.UnitTest.Population
             var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
             var populatedModel = serviceProvider.GetService<IPopulation<DelegationPopulation>>();
             var allPrepopulation = populatedModel!
-                .Populate()
+                .Setup()
                 .WithValue(x => x.A, () => 2)
                             .WithValue(x => x.AA, () => 2)
                             .WithValue(x => x.B, () => (uint)2)
@@ -325,7 +339,7 @@ namespace Rystem.Test.UnitTest.Population
                                 }
                                 return inners;
                             });
-            var all = allPrepopulation.Finalize();
+            var all = allPrepopulation.Populate();
             var theFirst = all.First();
             Assert.Equal(2, theFirst.A);
             Assert.NotNull(theFirst.AA);

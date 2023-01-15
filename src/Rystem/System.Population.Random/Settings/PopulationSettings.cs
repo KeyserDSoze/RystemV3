@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace System.Population.Random
+﻿namespace System.Population.Random
 {
     public class PopulationSettings
     {

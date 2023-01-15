@@ -1,21 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace System.Population.Random
 {
     internal sealed class PopulationBuilder<T> : IPopulationBuilder<T>
     {
         private readonly IPopulationStrategy<T> _populationStrategy;
-        private readonly int _numberOfElements;
-        private readonly int _numberOfElementsWhenEnumerableIsFound;
         private readonly PopulationSettings<T> _settings = new();
-        public PopulationBuilder(IPopulationStrategy<T> populationStrategy, int numberOfElements, int numberOfElementsWhenEnumerableIsFound)
+        public PopulationBuilder(IPopulationStrategy<T> populationStrategy)
         {
             _populationStrategy = populationStrategy;
-            _numberOfElements = numberOfElements;
-            _numberOfElementsWhenEnumerableIsFound = numberOfElementsWhenEnumerableIsFound;
         }
         private const string LinqFirst = "First().";
 
@@ -105,7 +98,7 @@ namespace System.Population.Random
         }
         public IPopulationBuilder<T> WithImplementation<TProperty, TEntity>(Expression<Func<T, TProperty>> navigationPropertyPath)
             => WithImplementation(navigationPropertyPath, typeof(TEntity));
-        public List<T> Finalize() 
-            => _populationStrategy.Populate(_settings, _numberOfElements, _numberOfElementsWhenEnumerableIsFound);
+        public List<T> Populate(int numberOfElements = 100, int numberOfElementsWhenEnumerableIsFound = 10) 
+            => _populationStrategy.Populate(_settings, numberOfElements, numberOfElementsWhenEnumerableIsFound);
     }
 }

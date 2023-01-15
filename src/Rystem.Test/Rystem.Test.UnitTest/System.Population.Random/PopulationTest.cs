@@ -69,6 +69,23 @@ namespace Rystem.Test.UnitTest.Population
             public int? B { get; set; }
         }
         [Fact]
+        public void RandomizeWithDefault()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddPopulationService();
+            services
+                .AddPopulationSettings<PopulationModelTest>()
+                .WithAutoIncrement(x => x.A, 1);
+            var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+            var populatedModel = serviceProvider.GetService<IPopulation<PopulationModelTest>>();
+            var allPrepopulation = populatedModel.Setup();
+            List<PopulationModelTest> all = new();
+            for (int i = 0; i < 3; i++)
+                all.AddRange(allPrepopulation.Populate(50, 4));
+            Assert.Equal(150, all.Count);
+            Assert.Equal(150, all.Last().A);
+        }
+        [Fact]
         public void DoubleRandomize()
         {
             IServiceCollection services = new ServiceCollection();

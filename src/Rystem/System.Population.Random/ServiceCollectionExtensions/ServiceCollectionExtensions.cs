@@ -59,14 +59,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <typeparam name="T">Model</typeparam>
         /// <param name="services">IServiceCollection</param>
-        /// <returns>IServiceCollection</returns>
-        public static IServiceCollection AddPopulationSettings<T>(
-          this IServiceCollection services,
-          Action<PopulationSettings<T>>? settings)
+        /// <returns>IPopulationBuilder<<typeparamref name="T"/>></returns>
+        public static IPopulationBuilder<T> AddPopulationSettings<T>(
+          this IServiceCollection services)
         {
-            var defaultSettings = new PopulationSettings<T>();
-            settings?.Invoke(defaultSettings);
-            return services.AddSingleton(defaultSettings);
+            var settings = new PopulationSettings<T>();
+            services.AddSingleton(settings);
+            return new PopulationBuilder<T>(default!, settings);
         }
         /// <summary>
         /// Override the population strategy default service.

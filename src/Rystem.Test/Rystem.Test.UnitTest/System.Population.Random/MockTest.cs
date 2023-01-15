@@ -8,7 +8,7 @@ using System.Population.Random;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Rystem.Test.UnitTest.Reflection
+namespace Rystem.Test.UnitTest.Population
 {
     public class PopulationTest
     {
@@ -74,7 +74,7 @@ namespace Rystem.Test.UnitTest.Reflection
             services.AddPopulationService();
             var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
             var populatedModel = serviceProvider.GetService<IPopulation<DelegationPopulation>>();
-            var all = populatedModel!
+            var allPrepopulation = populatedModel!
                 .Populate(90, 8)
                         .WithAutoIncrement(x => x.Id, 0)
                         .WithPattern(x => x.A, "[1-9]{1,2}")
@@ -117,8 +117,9 @@ namespace Rystem.Test.UnitTest.Reflection
                         .WithPattern(x => x.Z, "[1-9]{1,2}", "[1-9]{1,2}")
                         .WithPattern(x => x.ZZ, "[1-9]{1,2}", "[1-9]{1,2}")
                         .WithPattern(x => x.J!.First().A, "[a-z]{4,5}")
-                        .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}")
-                        .Execute();
+                        .WithPattern(x => x.Y!.First().Value.A, "[a-z]{4,5}");
+
+            var all = allPrepopulation.Execute();
             var theFirst = all.First()!;
             Assert.Equal(90, all.Count);
             Assert.Equal(0, all.First().Id);

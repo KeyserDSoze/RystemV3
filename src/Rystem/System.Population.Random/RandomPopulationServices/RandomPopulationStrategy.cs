@@ -32,13 +32,6 @@ namespace System.Population.Random
                         var value = _populationService!.Construct(settings, property.PropertyType,
                             numberOfElementsWhenEnumerableIsFound, string.Empty,
                             property.Name);
-                        if (property.PropertyType.GetInterface(nameof(IList)) != null && value is IEnumerable enumerable)
-                        {
-                            var list = (Activator.CreateInstance(property.PropertyType) as IList)!;
-                            foreach (var singleItem in enumerable)
-                                list.Add(singleItem);
-                            value = list;
-                        }
                         property.SetValue(entity, value);
                     }
                 }

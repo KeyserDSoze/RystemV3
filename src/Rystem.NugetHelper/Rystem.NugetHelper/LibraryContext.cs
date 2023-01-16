@@ -4,7 +4,8 @@
     {
         Major,
         Minor,
-        Patch
+        Patch,
+        Specific
     }
     internal record Version
     {
@@ -45,6 +46,11 @@
                     V = $"{Major}.{Minor}.{Patch + addingValue}";
                     break;
             }
+        }
+        public void SetVersion(VersionType type, string newVersion)
+        {
+            if (type == VersionType.Specific)
+                V = newVersion;
         }
     }
     internal record LibraryContext

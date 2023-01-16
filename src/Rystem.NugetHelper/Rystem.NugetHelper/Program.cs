@@ -2,6 +2,7 @@
 using Rystem.NugetHelper;
 using Rystem.NugetHelper.Engine;
 using System.Diagnostics;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Rystem.Nuget
@@ -11,7 +12,7 @@ namespace Rystem.Nuget
     {
         static readonly Regex regexForVersion = new("<Version>[^<]*</Version>");
         static readonly Dictionary<string, string> newVersionOfLibraries = new();
-        static readonly VersionType Type = VersionType.Patch;
+        static VersionType Type = VersionType.Patch;
         static readonly Regex PackageReference = new("<PackageReference[^>]*>");
         static readonly Regex Include = new("Include=");
         static readonly Regex VersionRegex = new(@"Version=\""[^\""]*\""");
@@ -25,6 +26,15 @@ namespace Rystem.Nuget
             Console.WriteLine("Only repository (1) or only Rystem (2) or everything (something else) with (3) you choose every turn if go ahead or not, With (4) go in debug.");
             var line = Console.ReadLine();
             Update? currentUpdateTree = line == "1" ? UpdateConfiguration.OnlyRepositoryTree : (line == "2" ? UpdateConfiguration.OnlyRystemTree : UpdateConfiguration.UpdateTree);
+            string? specificVersion = null;
+            Console.WriteLine("Do you wanna set a specific version? y for true or something else");
+            if (Console.ReadLine() == "y")
+            {
+                specificVersion = Console.ReadLine();
+                if (!specificVersion.ContainsAtLeast(2, '.'))
+                    throw new ArgumentException("You set a wrong version");
+                Type = VersionType.Specific;
+            }
             bool checkIfGoAhead = line == "3";
             bool isDebug = line == "4";
             while (currentUpdateTree != null)
@@ -34,7 +44,7 @@ namespace Rystem.Nuget
                 {
                     foreach (var rystemDirectory in rystemDirectories)
                     {
-                        await ReadInDeepAsync(rystemDirectory, context, currentUpdateTree, isDebug);
+                        await ReadInDeepAsync(rystemDirectory, context, currentUpdateTree, isDebug, specificVersion);
                     }
                 }
                 Console.WriteLine($"Current major version is {context.Version.V}");
@@ -58,7 +68,7 @@ namespace Rystem.Nuget
                 currentUpdateTree = currentUpdateTree.Son;
             }
         }
-        static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update, bool isDebug)
+        static async Task ReadInDeepAsync(DirectoryInfo directoryInfo, LibraryContext context, Update update, bool isDebug, string? specificVersion)
         {
             bool fileFound = false;
             foreach (var file in directoryInfo!.GetFiles())
@@ -75,7 +85,10 @@ namespace Rystem.Nuget
                         {
                             var currentVersion = regexForVersion.Match(content).Value;
                             var version = new NugetHelper.Version(regexForVersion.Match(content).Value.Split('>').Skip(1).First().Split('<').First());
-                            version.NextVersion(Type, AddingValueForVersion);
+                            if (Type != VersionType.Specific)
+                                version.NextVersion(Type, AddingValueForVersion);
+                            else
+                                version.SetVersion(Type, specificVersion);
                             Console.WriteLine($"{file.Name} from {currentVersion} to {version.V}");
                             content = content.Replace(currentVersion, $"<Version>{version.V}</Version>");
                             newVersionOfLibraries.Add(library.LibraryName!, version.V);
@@ -110,7 +123,7 @@ namespace Rystem.Nuget
             if (!fileFound)
                 foreach (var directory in directoryInfo.GetDirectories().Where(x => x.Name != "bin" && x.Name != "obj"))
                 {
-                    await ReadInDeepAsync(directory, context, update, isDebug);
+                    await ReadInDeepAsync(directory, context, update, isDebug, specificVersion);
                 }
         }
         static async Task CommitAndPushAsync(string path, string newVersion)

@@ -74,5 +74,17 @@
             };
 #pragma warning restore SYSLIB0001 // Type or member is obsolete
         }
+        public static bool ContainsAtLeast(this string value, int count, char contained)
+        {
+            int counter = 0;
+            foreach (char c in value)
+            {
+                if (contained == c)
+                    counter++;
+                if (counter >= count)
+                    return true;
+            }
+            return false;
+        }
     }
 }

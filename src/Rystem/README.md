@@ -163,6 +163,11 @@ A simple method to make uppercase the first character.
     string olfa = "dasda";
     var olfa2 = olfa.ToUpperCaseFirst();
 
+A simple method to check if a char is contained at least X times.
+
+    string value = "abcderfa";
+    bool containsAtLeastTwoAChar = value.ContainsAtLeast(2, 'a');
+
 ### Character separated-value (CSV)
 Transform any kind of IEnumerable data in a CSV string.
 

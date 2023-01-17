@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,9 +45,12 @@ namespace System.Population.Random
             if (settings.DelegatedMethodWithRandomForValueRetrieving.ContainsKey(treeName))
             {
                 var entities = settings.DelegatedMethodWithRandomForValueRetrieving[treeName].Invoke(_serviceProvider).ToResult();
+                var value = (Activator.CreateInstance(type) as IList)!;
                 var count = entities.Count() - numberOfEntities;
                 var index = System.Random.Shared.Next(0, count);
-                return entities.Skip(index).Take(numberOfEntities);
+                foreach (var entity in entities.Skip(index).Take(numberOfEntities))
+                    value.Add(entity);
+                return value;
             }
 
             if (settings.RegexForValueCreation.ContainsKey(treeName))

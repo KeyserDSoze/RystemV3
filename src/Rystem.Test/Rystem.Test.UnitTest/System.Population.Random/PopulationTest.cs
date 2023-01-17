@@ -74,6 +74,34 @@ namespace Rystem.Test.UnitTest.Population
             public TKey Key { get; set; }
         }
         [Fact]
+        public void RandomizeWithUserModel()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddPopulationService();
+            services
+                .AddPopulationSettings<Entity<AppUser, int>>()
+                .WithRandomValue(x => x.Value.Groups, async serviceProvider =>
+                {
+                    return new List<System.Population.Random.Models.Group>
+                    {
+                        new System.Population.Random.Models.Group
+                        {
+                            Id = "2",
+                            Name = "asd",
+                        },
+                        new System.Population.Random.Models.Group
+                        {
+                            Id = "3",
+                            Name = "asd555",
+                        }
+                    };
+                });
+            var serviceProvider = services.BuildServiceProvider().CreateScope().ServiceProvider;
+            var populatedModel = serviceProvider.GetService<IPopulation<Entity<AppUser, int>>>();
+            var all = populatedModel.Populate(67, 2);
+            var first = all.First().Value;
+        }
+        [Fact]
         public void RandomizeWithWrapper()
         {
             IServiceCollection services = new ServiceCollection();

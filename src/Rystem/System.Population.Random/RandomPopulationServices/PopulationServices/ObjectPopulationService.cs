@@ -11,17 +11,22 @@
             {
                 var entity = options.PopulationService.InstanceCreator
                     .CreateInstance(settings, options);
-                try
-                {
-                    var properties = options.Type.GetProperties();
-                    foreach (var property in properties)
-                        property.SetValue(entity, options.PopulationService
-                            .Construct(settings, property.PropertyType, options.NumberOfEntities,
-                            options.TreeName, property.Name));
-                }
-                catch
-                {
-                }
+                var properties = options.Type.GetProperties();
+                foreach (var property in properties.Where(x => x.SetMethod != null))
+                    try
+                    {
+                        var value = options.PopulationService
+                                .Construct(settings,
+                                           property.PropertyType,
+                                           options.NumberOfEntities,
+                                           options.TreeName,
+                                           property.Name);
+                        property
+                            .SetValue(entity, value);
+                    }
+                    catch
+                    {
+                    }
                 return entity!;
             }
             return default!;
